@@ -1,0 +1,132 @@
+.dynamic-crud-container {
+    font-family: 'Roboto', sans-serif; /* Fuente principal */
+    padding: 80px 48px 48px; /* Espaciado interno */
+    background-color: #f8f9fa; /* Fondo claro */
+  }
+
+  .header {
+    display: flex;
+    flex-direction: column; /* Alineación vertical */
+    align-items: flex-start; /* Alineación a la izquierda */
+    margin-bottom: 24px; /* Separación del encabezado con el contenido siguiente */
+    width: 100%; /* Toma el ancho completo */
+  }
+  
+  
+  .dynamic-crud-container .title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #000;
+    margin-bottom: 8px;
+  }
+  
+  .dynamic-crud-container .subtitle {
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    color: #666;
+    margin-top: 8px; /* Espacio pequeño debajo del título */
+    max-width: 600px; /* Ancho máximo para limitar la línea */
+    line-height: 1.6; /* Mejora la legibilidad */
+  }
+  
+  .dynamic-crud-container .filters {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background: #0000;
+    border-radius: 8px;
+  }
+  
+  .dynamic-crud-container .filters .filter-item {
+    flex: 1;
+  }
+  
+  .dynamic-crud-container .filters mat-label {
+    font-weight: bold; /* Etiquetas más visibles */
+    color: #00bcd4; /* Color de texto */
+  }
+  
+  .dynamic-crud-container .filters mat-input {
+    color: #000000; /* Color del texto dentro del input */
+  }
+  
+  .dynamic-crud-container .filters button {
+    margin-left: auto;
+    background: #00bcd4;
+  }
+  
+  .dynamic-crud-container .table-container {
+    margin-top: 16px;
+  }
+  
+  .dynamic-crud-container .table-container table {
+    width: 100%;
+  }
+  
+  .dynamic-crud-container .table-container th {
+    background-color: #00BCD4; /* Fondo azul */
+    color: white; /* Texto blanco */
+    text-align: center; /* Alineación centrada */
+    border: 2px solid #fff; /* Bordes blancos */
+  }
+  
+  .dynamic-crud-container .table-container td {
+    background: #fff;
+    color: #000;
+    padding: 10px; /* Espaciado interno */
+    text-align: center; /* Alineación centrada */
+  }
+
+  
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+  }
+  
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1100;
+    width: 400px;
+  }
+
+  .modal mat-form-field{
+    width: 100%;
+  }
+
+  .modal mat-label{
+    font-weight: bold; /* Texto en negrita */
+    margin-bottom: 4px; /* Espacio inferior */
+    font-size: 14px; /* Tamaño de fuente de la etiqueta */
+    color: #000000; /* Color del texto */
+  }
+  
+  .modal-title {
+    color: #00BCD4;
+    margin-bottom: 16px;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  
+  .btn-guardar {
+    background: #00BCD4;
+    margin-right: 10px;
+  }
+
+  .btn-cancelar{
+    background: #00BCD4;
+  }
+  
