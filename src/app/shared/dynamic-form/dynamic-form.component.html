@@ -1,0 +1,17 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div *ngFor="let control of config">
+    <label [for]="control.name">{{ control.label }}</label>
+    <input
+      *ngIf="control.type === 'text' || control.type === 'password' || control.type === 'email'"
+      [formControlName]="control.name"
+      [type]="control.type"
+      [placeholder]="control.label"
+    />
+    <div *ngIf="form.get(control.name)?.invalid && form.get(control.name)?.touched">
+      <small *ngIf="form.get(control.name)?.hasError('required')">Este campo es obligatorio.</small>
+      <small *ngIf="form.get(control.name)?.hasError('pattern')">Formato incorrecto.</small>
+    </div>
+  </div>
+
+  <button type="submit">{{ submitButtonLabel }}</button>
+</form>

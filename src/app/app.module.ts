@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatOptionModule } from '@angular/material/core';
 import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
@@ -16,11 +17,13 @@ import { MatDividerModule } from '@angular/material/divider';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DynamicCrudComponent } from './dynamic-crud/dynamic-crud.component';
+import { DynamicFormComponent } from './shared/dynamic-form/dynamic-form.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    DynamicCrudComponent
+    DynamicCrudComponent,
+    DynamicFormComponent
   ],
   imports: [
     BrowserModule,
@@ -32,6 +35,7 @@ import { DynamicCrudComponent } from './dynamic-crud/dynamic-crud.component';
     MatFormFieldModule,
     MatOptionModule,
     MatInputModule,
+    MatCheckboxModule,
     MatIconModule,
     MatTableModule,
     MatPaginatorModule,

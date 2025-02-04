@@ -1,0 +1,5 @@
+[
+    { "id": 1, "name": "Campaña 1", "date": "2025-01-10", "status": "Activo" },
+    { "id": 2, "name": "Campaña 2", "date": "2025-01-19", "status": "Inactivo" }
+  ]
+  

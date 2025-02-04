@@ -1,90 +1,162 @@
 <div class="dynamic-crud-container">
+  <!-- Encabezado del CRUD -->
   <div class="header">
     <h2 class="title">{{ config.title }}</h2>
     <p class="subtitle">{{ config.subtitle }}</p>
   </div>    
-  
-    <!-- Filtros -->
-    <div class="filters mat-elevation-z1">
-      <div *ngFor="let filter of config.filters" class="filter-item">
-        <mat-form-field appearance="outline" *ngIf="filter.type !== 'select'">
-          <mat-label>{{ filter.label }}</mat-label>
-          <input 
+
+  <!-- Sección de filtros -->
+  <div class="filters mat-elevation-z1">
+    <div *ngFor="let filter of config.filters" class="filter-item">
+      
+      <!-- Campo de entrada para filtros que no son select -->
+      <mat-form-field appearance="outline" *ngIf="filter.type !== 'select'">
+        <mat-label>{{ filter.label }}</mat-label>
+        <input 
           matInput 
           [type]="filter.type"
-           [(ngModel)]="filters[filter.key]"
-            (input)="applyFilters()" />
+          [(ngModel)]="filters[filter.key]"
+          (input)="applyFilters()" 
+        />
+      </mat-form-field>
+
+      <!-- Campo de selección (select) para filtros -->
+      <mat-form-field appearance="outline" *ngIf="filter.type === 'select'">
+        <mat-label>{{ filter.label }}</mat-label>
+        <mat-select [(ngModel)]="filters[filter.key]" (selectionChange)="applyFilters()">
+          <mat-option *ngFor="let option of filter.options" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+    </div>
+    
+    <!-- Botón para resetear filtros -->
+    <button mat-icon-button (click)="resetFilters()">
+      <mat-icon>refresh</mat-icon>
+    </button>
+
+    <!-- Botón para agregar un nuevo ítem -->
+    <button mat-raised-button (click)="addItem()">Crear {{ config.itemName }}</button>
+  </div>
+
+  <!-- Tabla de datos -->
+  <div class="table-container mat-elevation-z2" *ngIf="!isEditing">
+    <table mat-table [dataSource]="filteredItems" class="mat-table">
+      
+      <!-- Generación dinámica de columnas -->
+      <ng-container *ngFor="let column of config.columns" [matColumnDef]="column.key">
+        <th mat-header-cell *matHeaderCellDef>{{ column.label }}</th>
+        <td mat-cell *matCellDef="let item">{{ item[column.key] }}</td>
+      </ng-container>
+
+      <!-- Columna de acciones (editar/eliminar) -->
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let item">
+          <button mat-icon-button color="primary" (click)="editItem(item)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteItem(item.id)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <!-- Fila de encabezado -->
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+      <!-- Filas de datos -->
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <!-- Paginador de la tabla -->
+    <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"></mat-paginator>
+  </div>
+
+  <!-- Modal para agregar o editar un ítem -->
+  <div class="modal-backdrop" *ngIf="isModalOpen" (click)="cancelEdit()"></div>
+  <div class="modal" *ngIf="isModalOpen">
+    <h3 class="modal-title">{{ selectedItem.id ? 'Editar' : 'Crear' }} {{ config.itemName }}</h3>
+    <form #form="ngForm" novalidate>
+      
+      <!-- Generación dinámica de campos en el formulario -->
+      <div *ngFor="let column of config.columns">
+        
+        <!-- Campo de texto o fecha -->
+        <mat-form-field *ngIf="column.type === 'text' || column.type === 'date'" appearance="outline" class="formulario">
+          <mat-label>{{ column.label }}</mat-label>
+          <input
+            matInput
+            [type]="column.type"
+            [(ngModel)]="selectedItem[column.key]"
+            [name]="column.key"
+            [required]="column.required"
+            #inputRef="ngModel"
+          />
+          <mat-error *ngIf="inputRef.invalid && inputRef.touched">Este campo es obligatorio</mat-error>
         </mat-form-field>
 
-        <!-- Campo tipo select -->
-        <mat-form-field appearance="outline" *ngIf="filter.type === 'select'">
-          <mat-label>{{ filter.label }}</mat-label>
-          <mat-select [(ngModel)]="filters[filter.key]" (selectionChange)="applyFilters()">
-            <mat-option *ngFor="let option of filter.options" [value]="option.value">
+        <!-- Campo de selección (select) -->
+        <mat-form-field *ngIf="column.type === 'select'" appearance="outline" class="formulario">
+          <mat-label>{{ column.label }}</mat-label>
+          <mat-select [(ngModel)]="selectedItem[column.key]" [name]="column.key"  panelClass="custom-select-panel">
+            <mat-option *ngFor="let option of column.options" [value]="option.value">
               {{ option.label }}
             </mat-option>
           </mat-select>
         </mat-form-field>
-      </div>
-      <button mat-icon-button  (click)="resetFilters()">
-        <mat-icon>refresh</mat-icon>
-      </button>
-      <button mat-raised-button  (click)="addItem()">Crear {{ config.itemName }}</button>
-    </div>
-  
-    <!-- Tabla -->
-    <div class="table-container mat-elevation-z2" *ngIf="!isEditing">
-      <table mat-table [dataSource]="filteredItems" class="mat-table">
-        <!-- Columnas dinámicas -->
-        <ng-container *ngFor="let column of config.columns" [matColumnDef]="column.key">
-          <th mat-header-cell *matHeaderCellDef>{{ column.label }}</th>
-          <td mat-cell *matCellDef="let item">{{ item[column.key] }}</td>
-        </ng-container>
-  
-        <!-- Acciones -->
-        <ng-container matColumnDef="actions">
-          <th mat-header-cell *matHeaderCellDef>Acciones</th>
-          <td mat-cell *matCellDef="let item">
-            <button mat-icon-button color="primary" (click)="editItem(item)">
-              <mat-icon>edit</mat-icon>
-            </button>
-            <button mat-icon-button color="warn" (click)="deleteItem(item.id)">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </td>
-        </ng-container>
-  
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      </table>
-  
-      <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"></mat-paginator>
-    </div>
-  
-<!-- Modal -->
-<div class="modal-backdrop" *ngIf="isModalOpen" (click)="cancelEdit()"></div>
-<div class="modal" *ngIf="isModalOpen">
-  <h3 class="modal-title">{{ selectedItem.id ? 'Editar' : 'Crear' }} {{ config.itemName }}</h3>
-  <form>
-    <div *ngFor="let column of config.columns">
-      <!-- Campo tipo texto o fecha -->
-      <mat-form-field appearance="outline" class="formulario" >
-        <mat-label>{{ column.label }}</mat-label>
-        <input
-          matInput
-          [type]="column.type"
-          [(ngModel)]="selectedItem[column.key]"
-          [name]="column.key"
-        />
-      </mat-form-field>
-    
-    </div>
-  
-    <button mat-raised-button class="btn-guardar" type="button" (click)="saveItem()">Guardar</button>
-    <button mat-raised-button class="btn-cancelar" type="button" (click)="cancelEdit()">Cancelar</button>
-  </form>
-  
-</div>
+        
 
+        <!-- Campo de carga de archivos -->
+        <div *ngIf="column.type === 'file'" class="form-group">
+          <mat-label>{{ column.label }}</mat-label>
+          <br>
+          <input class="archivo"
+            type="file" 
+            (change)="onFileChange($event, column.key)"
+            [name]="column.key" 
+          />
+          <div *ngIf="!selectedItem[column.key] && form.submitted" class="error">
+            Este campo es obligatorio
+          </div>
+        </div>
+
+        <!-- Campo checkbox -->
+        <div *ngIf="column.type === 'checkbox'" class="form-group">
+          <mat-label>{{ column.label }}</mat-label>
+          <div *ngFor="let option of column.options">
+            <mat-checkbox class="checkbox"
+              [checked]="selectedItem[column.key]?.includes(option)" 
+              (change)="updateCheckbox($event, column.key, option)">
+              {{ option }}
+            </mat-checkbox>
+          </div>
+          <div *ngIf="!selectedItem[column.key]?.length && form.submitted" class="error">
+            Este campo es obligatorio
+          </div>
+        </div>
+        
+
+        <!-- Campo de texto largo (textarea) -->
+        <mat-form-field *ngIf="column.type === 'textarea'" appearance="outline" class="formulario">
+          <mat-label>{{ column.label }}</mat-label>
+          <textarea
+            matInput
+            [(ngModel)]="selectedItem[column.key]"
+            [name]="column.key"
+            [required]="column.required"
+            #textAreaRef="ngModel"
+          ></textarea>
+          <mat-error *ngIf="textAreaRef.invalid && textAreaRef.touched">Este campo es obligatorio</mat-error>
+        </mat-form-field>
+
+      </div>
+
+      <!-- Botones de acción en el modal -->
+      <button mat-raised-button class="btn-guardar" type="button" (click)="saveItem()">Guardar</button>
+      <button mat-raised-button class="btn-cancelar" type="button" (click)="cancelEdit()">Cancelar</button>
+    </form>
   </div>
-  
+</div>
