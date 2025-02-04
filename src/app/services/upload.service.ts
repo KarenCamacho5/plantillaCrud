@@ -5,13 +5,13 @@ import { Observable } from 'rxjs';
 @Injectable({
   providedIn: 'root'
 })
-export class DataService {
+export class UploadService {
 
-  private jsonUrl = 'assets/data.json'; // Ruta del archivo JSON
+  private apiUrl = 'http://localhost:3000/upload';
 
   constructor(private http: HttpClient) {}
 
-  getData(): Observable<any[]> {
-    return this.http.get<any[]>(this.jsonUrl);
+  uploadFile(formData: FormData): Observable<any> {
+    return this.http.post(this.apiUrl, formData);
   }
 }

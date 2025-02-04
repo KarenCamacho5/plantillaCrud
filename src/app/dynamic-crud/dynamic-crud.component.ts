@@ -1,7 +1,8 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormArray, FormGroup, Validators } from '@angular/forms';
-import { MatPaginator } from '@angular/material/paginator';
+// dynamic-crud.component.ts
+import { Component, OnInit } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-dynamic-crud',
@@ -9,186 +10,93 @@ import { MatTableDataSource } from '@angular/material/table';
   styleUrls: ['./dynamic-crud.component.css']
 })
 export class DynamicCrudComponent implements OnInit {
-  isModalOpen = false; // Estado del modal de creación/edición
-  submitted = false; // Variable para controlar la validación del formulario
-  isEditing: boolean = false;
-  @Input() config: any; // Recibe configuración desde el componente padre
+  config: any = {};
+  dataSource = new MatTableDataSource<any>();
+  filters: any = {};
+  filteredItems: any[] = [];
+  isModalOpen = false;
+  selectedItem: any = {};
 
-  items: any[] = []; // Lista de ítems gestionados
-  filteredItems: MatTableDataSource<any> = new MatTableDataSource(); // Fuente de datos filtrados
-
-  filters: any = {}; // Filtros aplicados en la tabla
-  displayedColumns: string[] = []; // Columnas a mostrar en la tabla
-
-  selectedItem: any = {}; // Ítem seleccionado para edición o creación
-
-  @ViewChild(MatPaginator) paginator!: MatPaginator; // Referencia al paginador
-
-  form: FormGroup; // Formulario reactivo
-
-  constructor(private fb: FormBuilder) {
-    this.form = this.fb.group({
-      agreement: this.fb.array([], Validators.required) // Campo de checkbox con validación
-    });
-  }
+  constructor(private http: HttpClient, private snackBar: MatSnackBar) {}
 
   ngOnInit(): void {
-    console.log(this.config.initialData); 
-
-    // Inicializa los ítems con datos proporcionados desde el componente padre
-    this.items = [...this.config.initialData];
-
-    // Configura la fuente de datos de la tabla
-    this.filteredItems = new MatTableDataSource(this.items);
-
-    // Define las columnas a mostrar en la tabla
-    this.displayedColumns = this.config.columns.map((col) => col.key).concat('actions');
+    this.loadConfig();
   }
 
-  ngAfterViewInit() {
-    // Asigna el paginador después de que la vista se haya inicializado
-    this.filteredItems.paginator = this.paginator;
-  }
-
-  /**
-   * Aplica los filtros ingresados en la tabla de datos.
-   */
-  applyFilters(): void {
-    const filtered = this.items.filter((item) => {
-      return Object.keys(this.filters).every((key) => {
-        const filterValue = this.filters[key]?.trim().toLowerCase() || '';
-        const itemValue = item[key]?.toString().trim().toLowerCase() || '';
-
-        if (!filterValue) return true;
-
-        if (typeof itemValue === 'string' && key === 'name') {
-          return itemValue.includes(filterValue);
-        }
-
-        if (key === 'status') {
-          return itemValue === filterValue;
-        }
-
-        if (key === 'date') {
-          const filterDate = new Date(filterValue);
-          const itemDate = new Date(itemValue);
-          if (!isNaN(filterDate.getTime()) && !isNaN(itemDate.getTime())) {
-            return itemDate.toISOString().split('T')[0] === filterDate.toISOString().split('T')[0];
-          }
-          return false;
-        }
-
-        return itemValue === filterValue;
-      });
+  loadConfig() {
+    this.http.get('/assets/data.json').subscribe((data: any) => {
+      this.config = data;
+      this.loadItems();
     });
-
-    this.filteredItems.data = filtered;
-    console.log('Filtros aplicados:', this.filters);
-    console.log('Datos filtrados:', this.filteredItems.data);
   }
 
-  /**
-   * Restablece los filtros aplicados en la tabla.
-   */
-  resetFilters(): void {
+  loadItems() {
+    this.http.get('http://localhost:3000/items').subscribe((data: any) => {
+      this.dataSource.data = data;
+      this.filteredItems = data;
+    });
+  }
+
+  applyFilters() {
+    this.filteredItems = this.dataSource.data.filter((item: any) => {
+      return Object.keys(this.filters).every(key => 
+        item[key]?.toString().toLowerCase().includes(this.filters[key]?.toString().toLowerCase())
+      );
+    });
+  }
+
+  resetFilters() {
     this.filters = {};
     this.applyFilters();
   }
 
-  /**
-   * Abre el modal para agregar un nuevo ítem.
-   */
-  addItem(): void {
-    this.isModalOpen = true;
-    this.submitted = false; // Reiniciar validación
-    this.selectedItem = { agreement: [] }; 
-    console.log('Creando nuevo ítem:', this.selectedItem);
-  }
-
-  /**
-   * Abre el modal para editar un ítem existente.
-   */
-  editItem(item: any): void {
-    this.isModalOpen = true;
-    this.submitted = false; // Reiniciar validación
-    this.isEditing = true;
-    this.selectedItem = { ...item };
-    console.log('Editando ítem:', this.selectedItem);
-  }
-
-  /**
-   * Guarda un ítem nuevo o editado en la lista.
-   */
-  saveItem(): void {
-    this.submitted = true; // Marcar el formulario como enviado para validación
-
-    // if (this.form.invalid) {
-    //   return; 
-      // No guardar si el formulario es inválido
-    // }
-
-    // Validar que el estado haya sido seleccionado
-    // if (!this.selectedItem.status) {
-    //   alert('Seleccione un estado antes de guardar.');
-    //   return;
-    // }
-
-    if (this.selectedItem.id) {
-      // Editar un ítem existente
-      const index = this.items.findIndex((item) => item.id === this.selectedItem.id);
-      if (index !== -1) {
-        this.items[index] = { ...this.selectedItem };
-      }
-    } else {
-      // Crear un nuevo ítem
-      this.selectedItem.id = new Date().getTime();
-      this.items.push({ ...this.selectedItem });
-    }
-
-    this.isModalOpen = false;
-    this.applyFilters();
-    localStorage.setItem('crudItems', JSON.stringify(this.items));
-  }
-
-  /**
-   * Cancela la edición o creación de un ítem.
-   */
-  cancelEdit(): void {
-    this.isModalOpen = false;
-    this.submitted = false;
-    this.isEditing = false;
+  addItem() {
     this.selectedItem = {};
+    this.isModalOpen = true;
   }
 
-  /**
-   * Elimina un ítem de la lista.
-   */
-  deleteItem(id: number): void {
-    this.items = this.items.filter((item) => item.id !== id);
-    this.applyFilters();
-    localStorage.setItem('crudItems', JSON.stringify(this.items));
+  editItem(item: any) {
+    this.selectedItem = { ...item };
+    this.isModalOpen = true;
   }
 
-  /**
-   * Maneja la carga de archivos en un campo de tipo file.
-   */
+  deleteItem(id: number) {
+    this.http.delete(`http://localhost:3000/items/${id}`).subscribe(() => {
+      this.snackBar.open('Item eliminado', 'Cerrar', { duration: 2000 });
+      this.loadItems();
+    });
+  }
+
+  saveItem() {
+    if (this.selectedItem.id) {
+      this.http.put(`http://localhost:3000/items/${this.selectedItem.id}`, this.selectedItem)
+        .subscribe(() => {
+          this.snackBar.open('Item actualizado', 'Cerrar', { duration: 2000 });
+          this.loadItems();
+          this.isModalOpen = false;
+        });
+    } else {
+      this.http.post('http://localhost:3000/items', this.selectedItem)
+        .subscribe(() => {
+          this.snackBar.open('Item creado', 'Cerrar', { duration: 2000 });
+          this.loadItems();
+          this.isModalOpen = false;
+        });
+    }
+  }
+
   onFileChange(event: any, key: string) {
     const file = event.target.files[0];
     if (file) {
-      this.selectedItem[key] = file; // Guardar archivo seleccionado en `selectedItem`
+      const formData = new FormData();
+      formData.append('file', file);
+      this.http.post('http://localhost:3000/upload', formData).subscribe((response: any) => {
+        this.selectedItem[key] = response.filePath;
+      });
     }
   }
 
-  updateCheckbox(event: any, key: string, value: string) {
-    if (!this.selectedItem[key]) {
-      this.selectedItem[key] = []; // Inicializa como array si no existe
-    }
-  
-    if (event.checked) {
-      this.selectedItem[key].push(value); // Agrega el valor seleccionado
-    } else {
-      this.selectedItem[key] = this.selectedItem[key].filter((v: string) => v !== value); // Elimina el valor desmarcado
-    }
+  cancelEdit() {
+    this.isModalOpen = false;
   }
-  
 }

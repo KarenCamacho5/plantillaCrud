@@ -14,6 +14,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 
+import { HttpClientModule } from '@angular/common/http';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DynamicCrudComponent } from './dynamic-crud/dynamic-crud.component';
@@ -41,7 +43,8 @@ import { DynamicFormComponent } from './shared/dynamic-form/dynamic-form.compone
     MatPaginatorModule,
     MatSelectModule,
     MatCardModule,
-    MatDividerModule
+    MatDividerModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
