@@ -1,60 +1,116 @@
 {
-    "title": "crudDinamico",
-    "crudConfig": {
-      "title": "Gestión de campañas",
-      "subtitle": "Aquí podrás ver y gestionar las campañas existentes...",
-      "itemName": "Campaña",
-      "columns": [
-        { "key": "name", "label": "Nombre", "type": "text", "required": true },
-        { "key": "date", "label": "Fecha de creación", "type": "date", "required": true },
-        {
-          "key": "status",
-          "label": "Estado",
-          "type": "select",
-          "options": [
-            { "value": "Activo", "label": "Activo" },
-            { "value": "Inactivo", "label": "Inactivo" }
-          ],
-          "required": true
-        },
-        {
-          "key": "file",
-          "label": "Archivo",
-          "type": "file",
-          "required": true
-        },
-        {
-          "key": "agreement",
-          "label": "Acepto términos",
-          "type": "checkbox",
-          "options": ["Opción 1", "Opción 2", "Opción 3"],
-          "required": true
-        },
-        {
-          "key": "comments",
-          "label": "Comentarios",
-          "type": "textarea",
-          "required": false
-        }
-      ],
-      "filters": [
-        { "key": "name", "label": "Campaña", "type": "text" },
-        { "key": "date", "label": "Fecha de creación", "type": "date" },
-        {
-          "key": "status",
-          "label": "Estado",
-          "type": "select",
-          "options": [
-            { "value": "", "label": "Todos" },
-            { "value": "Activo", "label": "Activo" },
-            { "value": "Inactivo", "label": "Inactivo" }
-          ]
-        }
-      ],
-      "initialData": [
-        { "id": 1, "name": "Campaña 1", "date": "2025-01-10", "status": "Activo" },
-        { "id": 2, "name": "Campaña 2", "date": "2025-01-19", "status": "Inactivo" }
-      ]
-    }
+  "title": "crudDinamico",
+  "crudConfig": {
+    "title": "Gestión de campañas",
+    "subtitle": "Aquí podrás ver y gestionar las campañas existentes...",
+    "itemName": "Campaña",
+    "columns": [
+      {
+        "key": "name",
+        "label": "Nombre",
+        "type": "text",
+        "required": true
+      },
+      {
+        "key": "date",
+        "label": "Fecha de creación",
+        "type": "date",
+        "required": true
+      },
+      {
+        "key": "status",
+        "label": "Estado",
+        "type": "select",
+        "options": [
+          {
+            "value": "Activo",
+            "label": "Activo"
+          },
+          {
+            "value": "Inactivo",
+            "label": "Inactivo"
+          }
+        ],
+        "required": true
+      },
+      {
+        "key": "file",
+        "label": "Archivo",
+        "type": "file",
+        "required": true
+      },
+      {
+        "key": "agreement",
+        "label": "Acepto términos",
+        "type": "checkbox",
+        "options": [
+          "Opción 1",
+          "Opción 2",
+          "Opción 3"
+        ],
+        "required": true
+      },
+      {
+        "key": "comments",
+        "label": "Comentarios",
+        "type": "textarea",
+        "required": false
+      }
+    ],
+    "filters": [
+      {
+        "key": "name",
+        "label": "Campaña",
+        "type": "text"
+      },
+      {
+        "key": "date",
+        "label": "Fecha de creación",
+        "type": "date"
+      },
+      {
+        "key": "startDate",
+        "label": "Desde",
+        "type": "date"
+      },
+      {
+        "key": "endDate",
+        "label": "Hasta",
+        "type": "date"
+      },
+      {
+        "key": "status",
+        "label": "Estado",
+        "type": "select",
+        "options": [
+          {
+            "value": "",
+            "label": "Todos"
+          },
+          {
+            "value": "Activo",
+            "label": "Activo"
+          },
+          {
+            "value": "Inactivo",
+            "label": "Inactivo"
+          }
+        ]
+      }
+    ],
+    "campaigns": [
+      {
+        "id": 1,
+        "name": "Campaña 1",
+        "date": "2025-01-10",
+        "status": "Activo"
+      },
+      {
+        "id": 2,
+        "name": "Campaña 2",
+        "date": "2025-01-19",
+        "status": "Inactivo"
+      }
+    ]
   }
-  
+}

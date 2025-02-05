@@ -112,8 +112,18 @@
   padding: 20px; /* Espaciado interno */
   border-radius: 8px; /* Bordes redondeados */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra sutil para el modal */
-  z-index: 1100; /* Z-index aún mayor para asegurar que se muestre por encima */
+  z-index: 1000; /* Z-index aún mayor para asegurar que se muestre por encima */
   width: 400px; /* Ancho fijo */
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 999; /* Debe estar detrás del modal */
 }
 
 /* Estilo para los campos dentro del modal */
@@ -134,7 +144,19 @@
 }
 
 .custom-select-panel {
-  z-index: 3000 !important; /* Asegúrate de que sea mayor que el z-index del modal */
+  z-index: 1001 !important; /* Asegura que el desplegable esté sobre el modal */
+}
+
+.mat-select-panel {
+  z-index: 1001 !important; /* Fuerza el menú a mostrarse encima */
+}
+
+.mat-select {
+  color: black !important; /* Asegura que el texto sea visible */
+}
+
+.mat-select-value {
+  color: black !important; /* Asegura que el valor seleccionado se muestre */
 }
 
 /* Título del modal */
@@ -154,4 +176,9 @@
 /* Estilo para el botón de cancelar dentro del modal */
 .btn-cancelar {
   background: #00BCD4; /* Fondo azul */
+}
+
+.btn-descarga {
+  background: #00BCD4;
+  margin-left: 110px;
 }
