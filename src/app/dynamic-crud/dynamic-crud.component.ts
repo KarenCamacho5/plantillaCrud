@@ -32,6 +32,7 @@ export class DynamicCrudComponent implements OnInit {
    */
   ngOnInit() {
     this.loadConfig();
+    console.log("Configuración del CRUD:", this.config);
   }
 
   /**

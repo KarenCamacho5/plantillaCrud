@@ -119,7 +119,7 @@
 
 
         <!-- Campo de carga de archivos -->
-        <div *ngIf="column.type === 'file'" class="form-group">
+        <div *ngIf="column.type === 'file'" class="form-group" >
           <mat-label>{{ column.label }}</mat-label>
           <br>
           <input type="file" (change)="onFileChange($event, column.key)" [name]="column.key"/>
@@ -151,6 +151,15 @@
           <textarea matInput [(ngModel)]="selectedItem[column.key]" [name]="column.key"></textarea>
         </mat-form-field>
 
+        <!-- Campo de texto enriquecido -->
+        <div *ngIf="column.type === 'rich-text'" class="rich-text-container">
+          <label>{{ column.label }}</label>
+          <angular-editor 
+            [(ngModel)]="selectedItem[column.key]" 
+            [name]="column.key" 
+            [config]="column.editorConfig">
+          </angular-editor>
+        </div>
       </div>
 
       <!-- Botones de acción en el modal -->
@@ -171,9 +180,9 @@
       </p>
 
       <!-- Botón de descarga con URL saneada -->
-      <p *ngIf="column.key === 'file'">
+      <p *ngIf="column.key === 'file'"  class="file-container">
         <strong>{{ column.label }}:</strong>
-        <span *ngIf="viewItem.file?.name">{{ viewItem.file.name }}</span>
+        <span *ngIf="viewItem.file?.name"  class="file-name">{{ viewItem.file.name }}</span>
         <a *ngIf="viewItem.file?.safeUrl" [href]="viewItem.file.safeUrl" [download]="viewItem.file.name">
           <button mat-raised-button class="btn-descarga">
             <mat-icon>download</mat-icon>

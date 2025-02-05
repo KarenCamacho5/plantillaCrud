@@ -55,7 +55,29 @@
         "label": "Comentarios",
         "type": "textarea",
         "required": false
-      }
+      },
+      {
+        "key": "description",
+        "label": "Descripción",
+        "type": "rich-text",
+        "required": false,
+        "editorConfig": {
+          "editable": true,
+          "spellcheck": true,
+          "height": "200px",
+          "minHeight": "150px",
+          "maxHeight": "400px",
+          "width": "auto",
+          "placeholder": "Escribe aquí...",
+          "translate": "no",
+          "defaultParagraphSeparator": "p",
+          "defaultFontName": "Arial",
+          "toolbarHiddenButtons": [
+            ["bold", "italic"],
+            ["fontSize"]
+          ]
+        }
+      }        
     ],
     "filters": [
       {

@@ -18,6 +18,8 @@ import { MatNativeDateModule } from '@angular/material/core';
 
 import { HttpClientModule } from '@angular/common/http';
 
+import { AngularEditorModule } from '@kolkov/angular-editor';
+
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DynamicCrudComponent } from './dynamic-crud/dynamic-crud.component';
@@ -48,7 +50,8 @@ import { DynamicFormComponent } from './shared/dynamic-form/dynamic-form.compone
     MatDividerModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    HttpClientModule
+    HttpClientModule,
+    AngularEditorModule 
   ],
   providers: [],
   bootstrap: [AppComponent]

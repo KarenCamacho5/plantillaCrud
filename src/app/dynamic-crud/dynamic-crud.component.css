@@ -91,6 +91,30 @@
   text-align: center; /* Alineación centrada */
 }
 
+.file-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Empuja el botón al lado derecho */
+  width: 100%; /* Asegura que ocupe todo el espacio disponible */
+  white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+  overflow: hidden; /* Oculta el desbordamiento */
+  text-overflow: ellipsis; /* Agrega puntos suspensivos si el texto es muy largo */
+}
+
+.file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex-grow: 1; /* Permite que el nombre del archivo ocupe el espacio restante */
+  margin-right: 10px; /* Espaciado entre el nombre del archivo y el botón */
+}
+
+.btn-descarga {
+  background: #00BCD4;
+  flex-shrink: 0; /* Evita que el botón se reduzca en tamaño */
+}
+
+
 /* Estilos para el fondo del modal */
 .modal-backdrop {
   position: fixed; /* Fijado en la pantalla */
@@ -105,6 +129,10 @@
 /* Estilo del modal */
 .modal {
   position: fixed; /* Fijado en la pantalla */
+  width: 593px !important; /* Hace el modal más ancho (80% del ancho de la ventana) */
+  max-width: 900px; /* Máximo ancho del modal */
+  max-height: 90vh; /* Evita que el modal sea más alto que la pantalla */
+  overflow-y: auto;
   top: 50%; /* Centrado verticalmente */
   left: 50%; /* Centrado horizontalmente */
   transform: translate(-50%, -50%); /* Ajusta el centro al 50% en ambas direcciones */
@@ -137,6 +165,24 @@
   margin-bottom: 4px; /* Espaciado inferior */
   font-size: 14px; /* Tamaño de fuente pequeño */
   color: #000000; /* Color negro */
+}
+
+.modal label{
+  font-weight: bold; /* Etiquetas en negrita */
+  margin-bottom: 4px; /* Espaciado inferior */
+  font-size: 14px; /* Tamaño de fuente pequeño */
+  color: #000000; /* Color negro */
+}
+
+.rich-text-container {
+  display: flex;
+  flex-direction: column; /* Asegura que los elementos estén en columna */
+  margin-bottom: 15px; /* Espaciado entre el campo y otros elementos */
+}
+
+.rich-text-container label {
+  font-weight: bold;
+  margin-bottom: 8px; /* Espacio entre el label y el editor */
 }
 
 .archivo{
@@ -178,7 +224,3 @@
   background: #00BCD4; /* Fondo azul */
 }
 
-.btn-descarga {
-  background: #00BCD4;
-  margin-left: 110px;
-}
