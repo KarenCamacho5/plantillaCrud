@@ -22,14 +22,20 @@ import { AngularEditorModule } from '@kolkov/angular-editor';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { TablaComponent } from './dynamic-crud/tabla/tabla.component';
+import { FormularioComponent } from './dynamic-crud/formulario/formulario.component';
+
 import { DynamicCrudComponent } from './dynamic-crud/dynamic-crud.component';
 import { DynamicFormComponent } from './shared/dynamic-form/dynamic-form.component';
+
 
 @NgModule({
   declarations: [
     AppComponent,
     DynamicCrudComponent,
-    DynamicFormComponent
+    DynamicFormComponent,
+    TablaComponent,
+    FormularioComponent
   ],
   imports: [
     BrowserModule,

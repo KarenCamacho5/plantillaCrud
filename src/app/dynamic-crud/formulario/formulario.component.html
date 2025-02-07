@@ -1,0 +1,118 @@
+<!-- Fondo oscuro cuando el modal está abierto -->
+<div class="modal-backdrop" *ngIf="!isViewMode" (click)="closeModal()"></div>
+
+<!-- Modal de Creación/Edición -->
+<div class="modal" *ngIf="!isViewMode">
+  <h3 class="modal-title">
+    {{ selectedItem.id ? 'Editar' : 'Crear' }} {{ config?.itemName }}
+  </h3>
+
+  <!-- Formulario -->
+  <form #form="ngForm" novalidate (ngSubmit)="saveItem($event)">
+    <div *ngFor="let column of config?.columns">
+
+      <!-- Campo de texto o fecha -->
+      <mat-form-field *ngIf="column.type === 'text' || column.type === 'date'" appearance="outline">
+        <mat-label>{{ column.label }}</mat-label>
+        <input 
+          matInput 
+          [type]="column.type" 
+          [(ngModel)]="selectedItem[column.key]" 
+          [name]="column.key" 
+          [required]="column.required"
+        />
+      </mat-form-field>
+
+      <!-- Campo de selección (Dropdown) -->
+      <mat-form-field *ngIf="column.type === 'select'" appearance="outline">
+        <mat-label>{{ column.label }}</mat-label>
+        <mat-select [(ngModel)]="selectedItem[column.key]" [name]="column.key" required>
+          <mat-option *ngFor="let option of column.options" [value]="option.value">
+            {{ option.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Campo de carga de archivos -->
+      <div *ngIf="column.type === 'file'" class="form-group">
+        <mat-label>{{ column.label }}</mat-label>
+        <br>
+        <input type="file" (change)="onFileChange($event, column.key)" [name]="column.key" required/>
+        <div *ngIf="!selectedItem[column.key] && form.submitted" class="error">
+          Este campo es obligatorio
+        </div>
+      </div>
+
+      <!-- Checkbox (Selección múltiple) -->
+      <div *ngIf="column.type === 'checkbox'" class="form-group">
+        <mat-label>{{ column.label }}</mat-label>
+        <div *ngFor="let option of column.options">
+          <mat-checkbox
+            [checked]="selectedItem[column.key]?.includes(option)"
+            (change)="updateCheckbox($event, column.key, option)">
+            {{ option }}
+          </mat-checkbox>
+        </div>
+        <div *ngIf="isRequired(column.key) && !selectedItem[column.key]?.length && form.submitted" class="error">
+          Este campo es obligatorio
+        </div>
+      </div>
+
+      <!-- Campo de texto largo (Textarea) -->
+      <mat-form-field *ngIf="column.type === 'textarea'" appearance="outline">
+        <mat-label>{{ column.label }}</mat-label>
+        <textarea matInput [(ngModel)]="selectedItem[column.key]" [name]="column.key"></textarea>
+      </mat-form-field>
+
+      <!-- Editor de texto enriquecido -->
+      <div *ngIf="column.type === 'rich-text'" class="rich-text-container">
+        <label>{{ column.label }}</label>
+        <angular-editor 
+          [(ngModel)]="selectedItem[column.key]" 
+          [name]="column.key" 
+          [config]="column.editorConfig">
+        </angular-editor>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <button mat-raised-button class="btn-guardar" (click)="saveItem()">Guardar</button>
+    <button mat-raised-button class="btn-cancelar" (click)="closeModal()">Cancelar</button>
+  </form>
+</div>
+
+
+<!-- Modal de visualización -->
+<!-- Fondo oscuro cuando el modal está abierto -->
+<div class="modal-backdrop" *ngIf="isViewMode" (click)="closeModal()"></div>
+
+<!-- Modal de Visualización -->
+<div class="modal" *ngIf="isViewMode">
+  <h3 class="modal-title">Detalles de la Campaña</h3>
+
+  <div class="modal-content">
+    <div *ngFor="let column of config?.columns">
+      <!-- Mostrar valores de los campos excepto archivos -->
+      <p *ngIf="column.key !== 'file'">
+        <strong>{{ column.label }}:</strong> {{ selectedItem[column.key] || 'No disponible' }}
+      </p>
+
+      <!-- Mostrar archivo adjunto con botón de descarga -->
+      <p *ngIf="column.key === 'file'" class="file-container">
+        <strong>{{ column.label }}:</strong>
+        <span *ngIf="selectedItem.file?.name" class="file-name">{{ selectedItem.file.name }}</span>
+      
+        <a *ngIf="selectedItem.file?.safeUrl" [href]="selectedItem.file.safeUrl" [download]="selectedItem.file.name">
+          <button mat-raised-button class="btn-descarga">
+            <mat-icon>download</mat-icon>
+          </button>
+        </a>
+      
+        <span *ngIf="!selectedItem.file?.safeUrl">No adjunto</span>
+      </p>
+    </div>
+  </div>
+
+  <button mat-raised-button class="btn-guardar" (click)="closeModal()">Cerrar</button>
+</div>
+

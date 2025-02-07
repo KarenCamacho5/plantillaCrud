@@ -1,0 +1,132 @@
+.file-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Empuja el botón al lado derecho */
+    width: 100%; /* Asegura que ocupe todo el espacio disponible */
+    white-space: nowrap; /* Evita que el texto se divida en varias líneas */
+    overflow: hidden; /* Oculta el desbordamiento */
+    text-overflow: ellipsis; /* Agrega puntos suspensivos si el texto es muy largo */
+  }
+  
+  .file-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-grow: 1; /* Permite que el nombre del archivo ocupe el espacio restante */
+    margin-right: 10px; /* Espaciado entre el nombre del archivo y el botón */
+  }
+  
+  .btn-descarga {
+    background: #00BCD4;
+    flex-shrink: 0; /* Evita que el botón se reduzca en tamaño */
+  }
+  
+  
+  /* Estilos para el fondo del modal */
+  .modal-backdrop {
+    position: fixed; /* Fijado en la pantalla */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Fondo oscuro con opacidad */
+    z-index: 1000; /* Z-index alto para que se muestre encima */
+  }
+  
+  /* Estilo del modal */
+  .modal {
+    position: fixed; /* Fijado en la pantalla */
+    width: 593px !important; /* Hace el modal más ancho (80% del ancho de la ventana) */
+    max-width: 900px; /* Máximo ancho del modal */
+    max-height: 90vh; /* Evita que el modal sea más alto que la pantalla */
+    overflow-y: auto;
+    top: 50%; /* Centrado verticalmente */
+    left: 50%; /* Centrado horizontalmente */
+    transform: translate(-50%, -50%); /* Ajusta el centro al 50% en ambas direcciones */
+    background: white; /* Fondo blanco */
+    padding: 20px; /* Espaciado interno */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra sutil para el modal */
+    z-index: 1000; /* Z-index aún mayor para asegurar que se muestre por encima */
+    width: 400px; /* Ancho fijo */
+  }
+  
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 999; /* Debe estar detrás del modal */
+  }
+  
+  /* Estilo para los campos dentro del modal */
+  .modal mat-form-field {
+    width: 100%; /* Los campos de formulario ocupan el 100% del ancho */
+  }
+  
+  /* Estilo de las etiquetas dentro del modal */
+  .modal mat-label {
+    font-weight: bold; /* Etiquetas en negrita */
+    margin-bottom: 4px; /* Espaciado inferior */
+    font-size: 14px; /* Tamaño de fuente pequeño */
+    color: #000000; /* Color negro */
+  }
+  
+  .modal label{
+    font-weight: bold; /* Etiquetas en negrita */
+    margin-bottom: 4px; /* Espaciado inferior */
+    font-size: 14px; /* Tamaño de fuente pequeño */
+    color: #000000; /* Color negro */
+  }
+  
+  .rich-text-container {
+    display: flex;
+    flex-direction: column; /* Asegura que los elementos estén en columna */
+    margin-bottom: 15px; /* Espaciado entre el campo y otros elementos */
+  }
+  
+  .rich-text-container label {
+    font-weight: bold;
+    margin-bottom: 8px; /* Espacio entre el label y el editor */
+  }
+  
+  .archivo{
+    margin: 20px;
+  }
+  
+  .custom-select-panel {
+    z-index: 1001 !important; /* Asegura que el desplegable esté sobre el modal */
+  }
+  
+  .mat-select-panel {
+    z-index: 1001 !important; /* Fuerza el menú a mostrarse encima */
+  }
+  
+  .mat-select {
+    color: black !important; /* Asegura que el texto sea visible */
+  }
+  
+  .mat-select-value {
+    color: black !important; /* Asegura que el valor seleccionado se muestre */
+  }
+  
+  /* Título del modal */
+  .modal-title {
+    color: #00BCD4; /* Color azul para el título */
+    margin-bottom: 16px; /* Espaciado inferior */
+    font-size: 20px; /* Tamaño grande */
+    font-weight: bold; /* Negrita */
+  }
+  
+  /* Estilo para el botón de guardar dentro del modal */
+  .btn-guardar {
+    background: #00BCD4; /* Fondo azul */
+    margin-right: 10px; /* Espaciado a la derecha */
+  }
+  
+  /* Estilo para el botón de cancelar dentro del modal */
+  .btn-cancelar {
+    background: #00BCD4; /* Fondo azul */
+  }

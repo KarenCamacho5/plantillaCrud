@@ -1,0 +1,58 @@
+/* Contenedor de los filtros con estilo de diseño */
+.filters {
+    display: flex;
+    align-items: center; /* Alineación de los filtros */
+    gap: 16px; /* Espaciado entre los filtros */
+    padding: 16px; /* Espaciado interno */
+    margin-bottom: 16px; /* Separación con el contenido posterior */
+    background: #0000; /* Fondo transparente */
+    border-radius: 8px; /* Bordes redondeados */
+  }
+  
+  /* Estilo de los elementos de filtro */
+    .filters .filter-item {
+    flex: 1; /* Hace que los filtros ocupen el mismo espacio */
+  }
+  
+  /* Estilo para las etiquetas dentro de los filtros */
+  .filters mat-label {
+    font-weight: bold; /* Las etiquetas estarán en negrita */
+    color: #00bcd4; /* Color azul para las etiquetas */
+  }
+  
+  /* Estilo para los campos de entrada dentro de los filtros */
+  .filters mat-input {
+    color: #000000; /* Color negro para el texto dentro de los inputs */
+  }
+  
+  /* Estilo para el botón de aplicar filtro */
+  .filters button {
+    margin-left: auto; /* Alineación del botón a la derecha */
+    background: #00bcd4; /* Fondo azul para el botón */
+  }
+  
+  /* Contenedor de la tabla con los datos */
+  .table-container {
+    margin-top: 16px; /* Espaciado superior para separar de los filtros */
+  }
+  
+  /* Estilo de la tabla */
+  .table-container table {
+    width: 100%; /* La tabla ocupa el 100% del ancho */
+  }
+  
+  /* Estilo de las cabeceras de la tabla */
+  .table-container th {
+    background-color: #00BCD4; /* Fondo azul para las cabeceras */
+    color: white; /* Texto blanco */
+    text-align: center; /* Alineación centrada */
+    border: 2px solid #fff; /* Bordes blancos */
+  }
+  
+  /* Estilo de las celdas de la tabla */
+  .table-container td {
+    background: #fff; /* Fondo blanco para las celdas */
+    color: #000; /* Texto negro */
+    padding: 10px; /* Espaciado interno */
+    text-align: center; /* Alineación centrada */
+  }

@@ -1,0 +1,100 @@
+<!-- 
+  @author Karen Camacho
+  @createdate 2025/02/4
+  Sección de filtros y tabla para gestionar la visualización y manipulación de los datos 
+-->
+
+<!-- Sección de filtros -->
+<div class="filters mat-elevation-z1">
+  <div *ngFor="let filter of config?.filters" class="filter-item">
+    
+    <!-- Campo de entrada de texto o numérico -->
+    <mat-form-field appearance="outline" *ngIf="filter.type !== 'select'">
+      <mat-label>{{ filter.label }}</mat-label>
+      <input 
+        matInput 
+        [type]="filter.type"
+        [(ngModel)]="filters[filter.key]"
+        (input)="applyFilters()" 
+      />
+    </mat-form-field>
+
+    <!-- Campo de selección desplegable -->
+    <mat-form-field appearance="outline" *ngIf="filter.type === 'select'">
+      <mat-label>{{ filter.label }}</mat-label>
+      <mat-select [(ngModel)]="filters[filter.key]" (selectionChange)="applyFilters()">
+        <mat-option *ngFor="let option of filter.options" [value]="option.value">
+          {{ option.label }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <!-- Campo de rango de fechas -->
+    <div *ngIf="filter.type === 'dateRange'" class="date-range">
+      <mat-form-field appearance="outline">
+        <mat-label>Desde</mat-label>
+        <input matInput [matDatepicker]="startPicker" [(ngModel)]="filters.startDate" (dateChange)="applyFilters()">
+        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+        <mat-datepicker #startPicker></mat-datepicker>
+      </mat-form-field>
+    
+      <mat-form-field appearance="outline">
+        <mat-label>Hasta</mat-label>
+        <input matInput [matDatepicker]="endPicker" [(ngModel)]="filters.endDate" (dateChange)="applyFilters()">
+        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+        <mat-datepicker #endPicker></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+  </div>
+  
+  <!-- Botón para reiniciar los filtros -->
+  <button mat-icon-button (click)="resetFilters()">
+    <mat-icon>refresh</mat-icon>
+  </button>
+
+  <!-- Botón para crear una nueva campaña -->
+  <button mat-raised-button color="primary" (click)="newItem.emit()">Crear {{ config?.itemName }}</button>
+</div>
+
+<!-- Sección de tabla -->
+<div class="table-container mat-elevation-z2">
+  <table mat-table [dataSource]="dataSource" class="mat-table">
+
+    <!-- Columnas dinámicas de la tabla -->
+    <ng-container *ngFor="let column of config?.columns" [matColumnDef]="column.key">
+      <th mat-header-cell *matHeaderCellDef>{{ column.label }}</th>
+      <td mat-cell *matCellDef="let item">{{ item[column.key] }}</td>
+    </ng-container>
+
+    <!-- Columna de acciones -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Acciones</th>
+      <td mat-cell *matCellDef="let item">
+
+        <!-- Botón de Editar -->
+        <button mat-icon-button color="primary" (click)="editItem.emit(item)">
+          <mat-icon>edit</mat-icon>
+        </button>
+
+        <!-- Botón de Ver Detalles -->
+        <button mat-icon-button color="accent" (click)="viewItem.emit(item)">
+          <mat-icon>visibility</mat-icon>
+        </button>
+
+        <!-- Botón de Eliminar -->
+        <button mat-icon-button color="warn" (click)="deleteItem.emit(item.id)">
+          <mat-icon>delete</mat-icon>
+        </button>
+
+      </td>
+    </ng-container>
+
+    <!-- Definición de filas -->
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+
+  <!-- Paginador de la tabla -->
+  <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 20]"></mat-paginator>
+</div>
