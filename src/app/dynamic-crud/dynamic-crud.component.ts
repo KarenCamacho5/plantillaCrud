@@ -50,6 +50,14 @@ export class DynamicCrudComponent implements OnInit {
    * @param viewMode - Indica si el modal se abre en modo visualización (por defecto `false`)
    */
   openModal(item: any = {}, viewMode = false) {
+    console.log("🟢 Abriendo modal con el siguiente ítem:", item);
+
+    this.selectedItem = this.config.columns.reduce((acc: any, column: any) => {
+      acc[column.key] = item[column.key] !== undefined ? item[column.key] : column.value || '';
+      return acc;
+    }, {});
+  
+    console.log("📌 Item seleccionado después de la asignación:", this.selectedItem);
     this.selectedItem = { ...item };
     this.isModalOpen = true;
     this.isViewMode = viewMode;

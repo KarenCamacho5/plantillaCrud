@@ -108,4 +108,16 @@ export class TablaComponent implements AfterViewInit, OnChanges {
   addItem() {
     this.newItem.emit(); // Emitir evento al padre
   }
+
+
+  handleAction(action: string, item: any) {
+    if (action === 'editItem') {
+      this.editItem.emit(item);
+    } else if (action === 'deleteItem') {
+      this.deleteItem.emit(item.id);
+    } else if (action === 'openViewMode') { // 🆕 Modo visualización
+      this.viewItem.emit(item);
+    }
+  }
+  
 }

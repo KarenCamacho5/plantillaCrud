@@ -130,3 +130,11 @@
   .btn-cancelar {
     background: #00BCD4; /* Fondo azul */
   }
+
+  .readonly-field {
+    font-size: 16px;
+    padding: 8px 0;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 10px;
+  }
+  

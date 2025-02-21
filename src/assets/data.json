@@ -6,79 +6,107 @@
     "itemName": "Campaña",
     "columns": [
       {
-        "key": "name",
-        "label": "Nombre",
+        "typeInput": "input",
+        "type": "hidden",
+        "key": "id",
+        "label": "ID",
+        "rules": null,
+        "value": null
+      },
+      {
+        "typeInput": "input",
         "type": "text",
-        "required": true
+        "key": "name",
+        "label": "Nombre de la Campaña",
+        "rules": { "required": true },
+        "value": null
       },
       {
-        "key": "date",
-        "label": "Fecha de creación",
-        "type": "date",
-        "required": true
+        "typeInput": "textarea",
+        "key": "description",
+        "label": "Descripción de la Campaña",
+        "rules": { "required": true },
+        "value": null
       },
       {
+        "typeInput": "select",
         "key": "status",
-        "label": "Estado",
-        "type": "select",
+        "label": "Estado de la campaña",
+        "rules": { "required": true },
+        "value": "",
         "options": [
+          { "value": "activo", "text": "Activo" },
+          { "value": "inactivo", "text": "Inactivo" }
+        ]
+      },
+      {
+        "typeInput": "date",
+        "key": "start_date",
+        "label": "Fecha de Inicio",
+        "rules": { "required": true },
+        "value": null
+      },
+      {
+        "typeInput": "date",
+        "key": "end_date",
+        "label": "Fecha de Finalización",
+        "rules": { "required": true },
+        "value": null
+      },
+      {
+        "typeInput": "date-range",
+        "key": "date_range",
+        "label": "Rango de Fechas",
+        "rules": {
+          "start_date": { "required": true }, 
+          "end_date": { "required": true } 
+        },
+        "range": [
           {
-            "value": "Activo",
-            "label": "Activo"
+            "key": "start_date",
+            "label": "Fecha Inicial"
           },
           {
-            "value": "Inactivo",
-            "label": "Inactivo"
+            "key": "end_date",
+            "label": "Fecha Final"
           }
-        ],
-        "required": true
+        ]
       },
       {
-        "key": "file",
-        "label": "Archivo",
+        "typeInput": "array",
+        "key": "questions",
+        "label": "Preguntas de la Campaña",
+        "rules": { "required": true },
+        "value": [],
+        "maxElements": 10,
+        "title": "Preguntas",
+        "description": "Añade preguntas para la campaña."
+      },
+      {
+        "typeInput": "input",
         "type": "file",
-        "required": true
+        "key": "file_attachment",
+        "label": "Adjuntar Archivo",
+        "rules": { "required": true },
+        "value": null,
+        "multiple": false,
+        "accept": ".pdf,.docx,.xlsx,.jpg,.png"
       },
       {
-        "key": "agreement",
-        "label": "Acepto términos",
-        "type": "checkbox",
-        "options": [
-          "Opción 1",
-          "Opción 2",
-          "Opción 3"
-        ],
-        "required": true
-      },
-      {
-        "key": "comments",
-        "label": "Comentarios",
-        "type": "textarea",
-        "required": false
-      },
-      {
-        "key": "description",
-        "label": "Descripción",
-        "type": "rich-text",
-        "required": false,
-        "editorConfig": {
-          "editable": true,
-          "spellcheck": true,
-          "height": "200px",
-          "minHeight": "150px",
-          "maxHeight": "400px",
-          "width": "auto",
-          "placeholder": "Escribe aquí...",
-          "translate": "no",
-          "defaultParagraphSeparator": "p",
-          "defaultFontName": "Arial",
-          "toolbarHiddenButtons": [
-            ["bold", "italic"],
-            ["fontSize"]
-          ]
-        }
-      }        
+        "typeInput": "checkbox",
+        "key": "terms",
+        "label": "Acepto los términos y condiciones",
+        "rules": { "required": true },
+        "options": ["Sí, acepto",
+                    "No acepto"]
+      }
     ],
+    "buttons": [
+      { "icon": "visibility", "color": "primary", "tooltip": "Ver", "event": "openViewMode" },
+      { "icon": "edit", "color": "accent", "tooltip": "Editar", "event": "editItem" },
+      { "icon": "delete", "color": "warn", "tooltip": "Eliminar", "event": "deleteItem" }
+    ],
+    
     "filters": [
       {
         "key": "name",

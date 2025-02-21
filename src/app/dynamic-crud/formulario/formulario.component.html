@@ -1,118 +1,198 @@
-<!-- Fondo oscuro cuando el modal está abierto -->
-<div class="modal-backdrop" *ngIf="!isViewMode" (click)="closeModal()"></div>
+<!-- Fondo del modal -->
+<div class="modal-backdrop" (click)="closeModal()"></div>
 
-<!-- Modal de Creación/Edición -->
-<div class="modal" *ngIf="!isViewMode">
-  <h3 class="modal-title">
-    {{ selectedItem.id ? 'Editar' : 'Crear' }} {{ config?.itemName }}
-  </h3>
+<!-- Modal principal -->
+<div class="modal">
+  <h3 class="modal-title">{{ selectedItem.id ? 'Editar' : 'Ver' }} {{ config?.itemName }}</h3>
 
-  <!-- Formulario -->
-  <form #form="ngForm" novalidate (ngSubmit)="saveItem($event)">
-    <div *ngFor="let column of config?.columns">
+  <form *ngIf="formSurvey" [formGroup]="formSurvey">
+    <div class="row row-gap-3">
+      <ng-container *ngIf="config?.columns?.length">
+        <ng-container *ngFor="let column of config.columns; let i = index">
+          <div *ngIf="column.type !== 'hidden' || column.show" [ngClass]="column.class || 'col-md-12'">
 
-      <!-- Campo de texto o fecha -->
-      <mat-form-field *ngIf="column.type === 'text' || column.type === 'date'" appearance="outline">
-        <mat-label>{{ column.label }}</mat-label>
-        <input 
-          matInput 
-          [type]="column.type" 
-          [(ngModel)]="selectedItem[column.key]" 
-          [name]="column.key" 
-          [required]="column.required"
-        />
-      </mat-form-field>
+            <!-- 📌 MODO SOLO LECTURA (Mostrar datos en texto cuando isViewMode = true) -->
+            <div *ngIf="isViewMode" class="readonly-field">
+              <strong>{{ column.label }}:</strong>
+              <!-- 📌 FECHAS -->
+              <ng-container *ngIf="column.typeInput === 'date'; else defaultView">
+                <span>{{ formSurvey.get(column.key)?.value | date:'dd/MM/yyyy' }}</span>
+              </ng-container>
+            
+              <!-- 📌 RANGO DE FECHAS -->
+              <ng-container *ngIf="column.typeInput === 'date-range'; else defaultView">
+                <span>
+                  {{ formSurvey.get(column.key)?.value?.start_date | date:'dd/MM/yyyy' }} -
+                  {{ formSurvey.get(column.key)?.value?.end_date | date:'dd/MM/yyyy' }}
+                </span>
+              </ng-container>
+            
+              <!-- 📌 ARCHIVO -->
+              <ng-container *ngIf="column.type === 'file'; else defaultView">
+                <a *ngIf="selectedItem[column.key]?.file"
+                   [href]="getFileUrl(column.key)" 
+                   download="{{ selectedItem[column.key]?.name }}">
+                  {{ selectedItem[column.key]?.name }}
+                </a>
+              </ng-container>
+            
+              <!-- 📌 CHECKBOX -->
+              <ng-container *ngIf="column.typeInput === 'checkbox'; else defaultView">
+                <span>{{ formSurvey.get(column.key)?.value ? 'Sí acepto' : 'No acepto' }}</span>
+              </ng-container>
+            
+              <!-- 📌 LISTA (PREGUNTAS DE LA CAMPAÑA) -->
+              <ng-container *ngIf="column.typeInput === 'array'; else defaultView">
+                <ul *ngIf="formSurvey.get(column.key)?.value?.length > 0; else noData">
+                  <li *ngFor="let question of formSurvey.get(column.key)?.value">{{ question.text }}</li>
+                </ul>
+                <ng-template #noData><span>Sin preguntas registradas</span></ng-template>
+              </ng-container>
+            
+              <!-- 📌 VISTA POR DEFECTO (Texto normal) -->
+              <ng-template #defaultView>
+                <span>{{ formSurvey.get(column.key)?.value || 'Sin información' }}</span>
+              </ng-template>
+            </div>
 
-      <!-- Campo de selección (Dropdown) -->
-      <mat-form-field *ngIf="column.type === 'select'" appearance="outline">
-        <mat-label>{{ column.label }}</mat-label>
-        <mat-select [(ngModel)]="selectedItem[column.key]" [name]="column.key" required>
-          <mat-option *ngFor="let option of column.options" [value]="option.value">
-            {{ option.label }}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+            <!-- 📌 INPUT DE TEXTO Y TEXTAREA -->
+            <mat-form-field *ngIf="!isViewMode && (column.typeInput === 'input' || column.typeInput === 'textarea') && column.type !== 'file'"
+                            appearance="fill" class="w-100">
+              <mat-label>{{ column.label }}</mat-label>
 
-      <!-- Campo de carga de archivos -->
-      <div *ngIf="column.type === 'file'" class="form-group">
-        <mat-label>{{ column.label }}</mat-label>
-        <br>
-        <input type="file" (change)="onFileChange($event, column.key)" [name]="column.key" required/>
-        <div *ngIf="!selectedItem[column.key] && form.submitted" class="error">
-          Este campo es obligatorio
+              <input *ngIf="column.typeInput === 'input' && column.type !== 'file'" 
+                    [type]="column.type" matInput
+                    [formControlName]="column.key" [placeholder]="column.label" [disabled]="isViewMode">
+
+              <textarea *ngIf="column.typeInput === 'textarea'" matInput
+                        [formControlName]="column.key" [placeholder]="column.label" [disabled]="isViewMode"></textarea>
+
+              <mat-error *ngIf="formSurvey.get(column.key)?.invalid">
+                <span *ngIf="formSurvey.get(column.key)?.hasError('required')">Campo requerido</span>
+                <span *ngIf="formSurvey.get(column.key)?.hasError('minlength')">Mínimo de caracteres inválido</span>
+                <span *ngIf="formSurvey.get(column.key)?.hasError('maxlength')">Máximo de caracteres inválido</span>
+                <span *ngIf="formSurvey.get(column.key)?.hasError('email')">Email inválido</span>
+                <span *ngIf="formSurvey.get(column.key)?.hasError('pattern')">Formato no válido</span>
+              </mat-error>
+            </mat-form-field>
+
+            <!-- 📌 SELECT DINÁMICO -->
+            <mat-form-field *ngIf="!isViewMode && column.typeInput === 'select'" appearance="fill" class="w-100">
+              <mat-label>{{ column.label }}</mat-label>
+              <mat-select [formControlName]="column.key" [disabled]="isViewMode">
+                <mat-option *ngFor="let option of column.options" [value]="option.value">{{ option.text }}</mat-option>
+              </mat-select>
+              <mat-error *ngIf="formSurvey.get(column.key)?.invalid">Campo requerido</mat-error>
+            </mat-form-field>
+
+            <!-- 📌 CHECKBOX (con opciones) -->
+            <div *ngIf=" !isViewMode && column.typeInput === 'checkbox'" class="w-100">
+              <label>{{ column.label }}</label>
+              <div *ngFor="let option of column.options">
+                <mat-checkbox [formControlName]="column.key" [value]="option" [disabled]="isViewMode">
+                  {{ option }}
+                </mat-checkbox>
+              </div>
+              <mat-error *ngIf="formSurvey.get(column.key)?.invalid">Campo requerido</mat-error>
+            </div>
+
+            <!-- 📌 CHECKBOX SOLO LECTURA -->
+            <!-- <div *ngIf="isViewMode && column.typeInput === 'checkbox'">
+              <span>{{ formSurvey.get(columna.key)?.value ? 'Sí acepto' : 'No acepto' }}</span>
+            </div> -->
+            
+
+
+            <!-- 📌 FECHA -->
+            <mat-form-field *ngIf="!isViewMode && column.typeInput === 'date'" appearance="fill" class="w-100">
+              <mat-label>{{ column.label }}</mat-label>
+              <input matInput [matDatepicker]="picker" [formControlName]="column.key">
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-datepicker #picker></mat-datepicker>
+              <mat-error *ngIf="formSurvey.get(column.key)?.hasError('required')">Campo requerido</mat-error>
+            </mat-form-field>
+
+            <!-- 📌 Mostrar fecha en modo solo lectura -->
+            <!-- <div *ngIf="isViewMode && column.typeInput === 'date'">
+              <span>{{ formSurvey.get(column.key)?.value | date:'dd/MM/yyyy' }}</span>
+            </div>             -->
+
+
+            <!-- 📌 RANGO DE FECHAS -->
+            <mat-form-field *ngIf="!isViewMode && column.typeInput === 'date-range'" appearance="fill" class="w-100" [formGroupName]="column.key">
+              <mat-label>Rango de Fechas</mat-label>
+              <mat-date-range-input [rangePicker]="picker">
+                <input matStartDate formControlName="start_date" placeholder="Fecha inicial">
+                <input matEndDate formControlName="end_date" placeholder="Fecha final">
+              </mat-date-range-input>
+              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+              <mat-date-range-picker #picker></mat-date-range-picker>
+            </mat-form-field>
+
+            <!-- 📌 MODO SOLO LECTURA PARA FECHA Y RANGO -->
+            <!-- <div *ngIf="isViewMode && column.typeInput === 'date-range'">
+              <span>
+                {{ formSurvey.get(column.key)?.value?.start_date | date:'dd/MM/yyyy' }} - 
+                {{ formSurvey.get(column.key)?.value?.end_date | date:'dd/MM/yyyy' }}
+              </span>
+            </div> -->
+            
+            <!-- 📌 ARCHIVO -->
+            <div *ngIf="!isViewMode && column.typeInput === 'input' && column.type === 'file'" class="mb-3">
+              <label class="fs-6 d-block">{{ column.label }}</label> <br>
+              <input type="file" [accept]="column.accept" (change)="onFileChange($event, column.key)" class="form-control" [disabled]="isViewMode">
+            </div>
+
+           <!-- 📌 MODO SOLO LECTURA PARA ARCHIVO  -->
+            <!-- <div *ngIf="isViewMode && column.typeInput === 'input' && column.type === 'file'">
+              <a *ngIf="selectedItem[column.key]?.file" 
+                 [href]="getFileUrl(column.key)" download="{{ selectedItem[column.key]?.name }}">
+                {{ selectedItem[column.key]?.name }}
+              </a>
+            </div> -->
+            
+
+            <!-- 📌 ARRAY DE PREGUNTAS -->
+            <div *ngIf="!isViewMode && column.typeInput === 'array'" class="mb-3">
+              <label class="fs-6 d-block">{{ column.label }}</label>
+              <div formArrayName="{{ column.key }}" >
+                <div *ngFor="let question of options(column.key).controls; let i = index" [formGroupName]="i">
+                  <input type="text" matInput formControlName="text" placeholder="Escribe una pregunta" [disabled]="isViewMode">
+                  <button type="button" mat-icon-button color="warn" (click)="removeOption(column.key, i)" *ngIf="!isViewMode">
+                    🗑️
+                  </button>
+                </div>
+              </div>
+              <button type="button" mat-raised-button color="primary" (click)="addOption(column.key)" *ngIf="!isViewMode">
+                ➕ Agregar Pregunta
+              </button>
+              <mat-error *ngIf="formSurvey.get(column.key)?.invalid">Debe agregar al menos una pregunta.</mat-error>
+            </div>
+
+            <!-- 📌 PREGUNTAS EN SOLO LECTURA -->
+            <!-- <div *ngIf="isViewMode && column.typeInput === 'array'">
+              <ul *ngIf="formSurvey.get(column.key)?.value?.length > 0; else noData">
+                <li *ngFor="let question of formSurvey.get(column.key)?.value">{{ question.text }}</li>
+              </ul>
+              <ng-template #noData><span>Sin preguntas registradas</span></ng-template>
+            </div> -->
+            
+
+
+
+          </div>
+        </ng-container> 
+      </ng-container>
+
+      <!-- BOTONES -->
+      <div class="row py-3 d-flex justify-content-end">
+        <div class="col-md-3">
+          <button type="button" mat-raised-button class="w-100" (click)="closeModal()">Cerrar</button>
         </div>
-      </div>
-
-      <!-- Checkbox (Selección múltiple) -->
-      <div *ngIf="column.type === 'checkbox'" class="form-group">
-        <mat-label>{{ column.label }}</mat-label>
-        <div *ngFor="let option of column.options">
-          <mat-checkbox
-            [checked]="selectedItem[column.key]?.includes(option)"
-            (change)="updateCheckbox($event, column.key, option)">
-            {{ option }}
-          </mat-checkbox>
+        <div class="col-md-3" *ngIf="!isViewMode">
+          <button type="button" mat-raised-button color="primary" class="w-100" (click)="submitForm()">Guardar</button>
         </div>
-        <div *ngIf="isRequired(column.key) && !selectedItem[column.key]?.length && form.submitted" class="error">
-          Este campo es obligatorio
-        </div>
-      </div>
-
-      <!-- Campo de texto largo (Textarea) -->
-      <mat-form-field *ngIf="column.type === 'textarea'" appearance="outline">
-        <mat-label>{{ column.label }}</mat-label>
-        <textarea matInput [(ngModel)]="selectedItem[column.key]" [name]="column.key"></textarea>
-      </mat-form-field>
-
-      <!-- Editor de texto enriquecido -->
-      <div *ngIf="column.type === 'rich-text'" class="rich-text-container">
-        <label>{{ column.label }}</label>
-        <angular-editor 
-          [(ngModel)]="selectedItem[column.key]" 
-          [name]="column.key" 
-          [config]="column.editorConfig">
-        </angular-editor>
       </div>
     </div>
-
-    <!-- Botones de acción -->
-    <button mat-raised-button class="btn-guardar" (click)="saveItem()">Guardar</button>
-    <button mat-raised-button class="btn-cancelar" (click)="closeModal()">Cancelar</button>
   </form>
 </div>
-
-
-<!-- Modal de visualización -->
-<!-- Fondo oscuro cuando el modal está abierto -->
-<div class="modal-backdrop" *ngIf="isViewMode" (click)="closeModal()"></div>
-
-<!-- Modal de Visualización -->
-<div class="modal" *ngIf="isViewMode">
-  <h3 class="modal-title">Detalles de la Campaña</h3>
-
-  <div class="modal-content">
-    <div *ngFor="let column of config?.columns">
-      <!-- Mostrar valores de los campos excepto archivos -->
-      <p *ngIf="column.key !== 'file'">
-        <strong>{{ column.label }}:</strong> {{ selectedItem[column.key] || 'No disponible' }}
-      </p>
-
-      <!-- Mostrar archivo adjunto con botón de descarga -->
-      <p *ngIf="column.key === 'file'" class="file-container">
-        <strong>{{ column.label }}:</strong>
-        <span *ngIf="selectedItem.file?.name" class="file-name">{{ selectedItem.file.name }}</span>
-      
-        <a *ngIf="selectedItem.file?.safeUrl" [href]="selectedItem.file.safeUrl" [download]="selectedItem.file.name">
-          <button mat-raised-button class="btn-descarga">
-            <mat-icon>download</mat-icon>
-          </button>
-        </a>
-      
-        <span *ngIf="!selectedItem.file?.safeUrl">No adjunto</span>
-      </p>
-    </div>
-  </div>
-
-  <button mat-raised-button class="btn-guardar" (click)="closeModal()">Cerrar</button>
-</div>
-
