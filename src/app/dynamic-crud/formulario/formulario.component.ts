@@ -35,7 +35,12 @@ export class FormularioComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     console.log("⚡ Configuración de columnas:", this.config?.columns);
+    console.log("⚡ Inicializando formulario con columnas:", this.config?.columns);
   
+    if (!this.config?.columns?.length) {
+      console.warn("⚠️ No hay columnas definidas en la configuración.");
+      return;
+    }
     // Inicializa correctamente los DatePickers con referencias vacías
     this.datePickers = this.config.columns.map(() => ({ picker: null }));
   
@@ -64,17 +69,23 @@ export class FormularioComponent implements OnInit, OnChanges {
     const objectForm: any = {};
   
     this.config?.columns.forEach((item: any) => {
+      if (item.typeInput === 'date') {
+        objectForm[item.key] = new FormControl(
+          this.parseDate(this.selectedItem?.[item.key]), // 🔹 Convierte string a Date
+          this.generateValidators(item.rules)
+        );
+      } 
       if (item.typeInput === 'date-range' && item.range?.length === 2) {
         const startDateKey = item.range[0].key;
         const endDateKey = item.range[1].key;
       
         objectForm[item.key] = new FormGroup({
           [startDateKey]: new FormControl(
-            this.selectedItem?.[startDateKey] ?? '', 
+            this.parseDate(this.selectedItem?.[startDateKey]) ?? '', 
             this.generateValidators(item.rules?.[startDateKey] || { required: true })
           ),
           [endDateKey]: new FormControl(
-            this.selectedItem?.[endDateKey] ?? '', 
+            this.parseDate(this.selectedItem?.[endDateKey] )?? '', 
             this.generateValidators(item.rules?.[endDateKey] || { required: true })
           )
         });
@@ -173,27 +184,36 @@ export class FormularioComponent implements OnInit, OnChanges {
   
   submitForm(): void {
     if (this.formSurvey.valid) {
-      console.log("✅ Formulario válido, enviando datos:", this.formSurvey.value);
+      const formattedData = { ...this.formSurvey.value };
+  
+      this.config.columns.forEach(column => {
+        if (column.typeInput === 'date' && formattedData[column.key]) {
+          formattedData[column.key] = this.datePipe.transform(formattedData[column.key], 'dd/MM/yyyy');
+        }
+        
+        if (column.typeInput === 'date-range' && formattedData[column.key]) {
+          formattedData[column.key].start_date = this.datePipe.transform(formattedData[column.key].start_date, 'dd/MM/yyyy');
+          formattedData[column.key].end_date = this.datePipe.transform(formattedData[column.key].end_date, 'dd/MM/yyyy');
+        }
+      });
+  
+      console.log("✅ Datos enviados con fecha formateada:", formattedData);
+  
       if (!this.ifFormFilter) {
         const confirmSend = window.confirm(this.alertTextConfirm);
         if (confirmSend) {
-          this.save.emit(this.formSurvey.value);
+          this.save.emit(formattedData);
           this.closeModal();
         }
       } else {
-        this.save.emit(this.formSurvey.value);
+        this.save.emit(formattedData);
       }
     } else {
       console.warn("⚠️ Formulario inválido, revisa los errores.");
       this.formSurvey.markAllAsTouched();
-
-      const dateRangeControl = this.formSurvey.get('date_range');
-      if (dateRangeControl instanceof FormGroup) {
-        dateRangeControl.controls['start_date'].updateValueAndValidity();
-        dateRangeControl.controls['end_date'].updateValueAndValidity();
-      }
     }
   }
+  
   
   
   
@@ -265,17 +285,25 @@ export class FormularioComponent implements OnInit, OnChanges {
   openViewMode(item: any) {
     this.viewItem.emit(item);  // Emitimos el ítem seleccionado al padre
   }
-  
 
 
-  formatDate(value: any): string {
-    if (!value) return 'Sin información';
+  parseDate(value: any): Date | null {
+    if (!value) return null;
   
-    // Convertir a objeto Date si es necesario
-    const date = value instanceof Date ? value : new Date(value);
+    // 📌 Detecta si ya es un objeto Date
+    if (value instanceof Date) return value;
   
-    // Formatear correctamente
-    return this.datePipe.transform(date, 'dd/MM/yyyy') || 'Sin información';
+    // 📌 Convertir formato dd/MM/yyyy a Date
+    const parts = value.split('/');
+    if (parts.length === 3) {
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1; // Meses en JS van de 0 a 11
+      const year = parseInt(parts[2], 10);
+      return new Date(year, month, day);
+    }
+  
+    return new Date(value); // Intentar convertirlo directamente
   }
+  
   
 }

@@ -5,8 +5,7 @@
 <div class="modal">
   <h3 class="modal-title">{{ isViewMode ? 'Detalles de' : (selectedItem.id ? 'Editar' : 'Crear') }} {{ config?.itemName }}</h3>
 
-
-  <form *ngIf="formSurvey" [formGroup]="formSurvey">
+  <form [formGroup]="formSurvey">
     <div class="row row-gap-3">
       <ng-container *ngIf="config?.columns?.length">
         <ng-container *ngFor="let column of config.columns; let i = index">
@@ -18,20 +17,20 @@
 
               <!-- 📌 FECHA (Solo en dd/MM/yyyy) -->
               <ng-container *ngIf="column.typeInput === 'date'">
-                <span>
-                  {{ formatDate(formSurvey.get(column.key)?.value) }}
-                </span>
+                <span>{{ formSurvey.get(column.key)?.value | date:'dd/MM/yyyy' }}</span>
               </ng-container>
+              
+              
               
               
               <!-- 📌 RANGO DE FECHAS -->
               <ng-container *ngIf="column.typeInput === 'date-range'">
                 <span>
-                  {{ formSurvey.get(column.key)?.value?.start_date ? (formSurvey.get(column.key)?.value?.start_date | date:'dd/MM/yyyy') : 'Sin información' }}
-                   - 
-                  {{ formSurvey.get(column.key)?.value?.end_date ? (formSurvey.get(column.key)?.value?.end_date | date:'dd/MM/yyyy') : 'Sin información' }}
+                  {{ formSurvey.get(column.key)?.value?.start_date | date:'dd/MM/yyyy' }} -
+                  {{ formSurvey.get(column.key)?.value?.end_date | date:'dd/MM/yyyy' }}
                 </span>
               </ng-container>
+              
 
               <!-- 📌 ARCHIVO (Descargar si existe) -->
               <ng-container *ngIf="column.type === 'file'">

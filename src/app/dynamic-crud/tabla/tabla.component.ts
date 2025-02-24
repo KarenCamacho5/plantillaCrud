@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, ViewChild, AfterViewInit, OnChanges } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-tabla',
@@ -20,6 +21,8 @@ export class TablaComponent implements AfterViewInit, OnChanges {
   dataSource = new MatTableDataSource<any>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  constructor(private datePipe: DatePipe) {}
 
   /**
    * @author Karen Camacho
@@ -47,7 +50,7 @@ export class TablaComponent implements AfterViewInit, OnChanges {
 
     // Definir las columnas visibles en la tabla
     this.displayedColumns = this.config?.columns
-      .filter((col: any) => ['name', 'date', 'status'].includes(col.key)) // Mostrar solo estas columnas
+      .filter((col: any) => ['name', 'start_date', 'end_date', 'status'].includes(col.key)) // Mostrar solo estas columnas
       .map((col: any) => col.key);
 
     this.displayedColumns.push('actions'); // Agregar columna de acciones

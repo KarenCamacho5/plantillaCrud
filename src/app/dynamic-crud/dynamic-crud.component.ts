@@ -51,6 +51,7 @@ export class DynamicCrudComponent implements OnInit {
    */
   openModal(item: any = {}, viewMode = false) {
     console.log("🟢 Abriendo modal con el siguiente ítem:", item);
+    this.selectedItem = item || {}; 
 
     this.selectedItem = this.config.columns.reduce((acc: any, column: any) => {
       acc[column.key] = item[column.key] !== undefined ? item[column.key] : column.value || '';

@@ -65,6 +65,7 @@
     <ng-container *ngFor="let column of config?.columns" [matColumnDef]="column.key">
       <th mat-header-cell *matHeaderCellDef>{{ column.label }}</th>
       <td mat-cell *matCellDef="let item">{{ item[column.key] }}</td>
+      
     </ng-container>
 
     <!-- 📌 Columna de Acciones -->

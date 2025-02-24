@@ -35,6 +35,7 @@
   
   /* Estilo del modal */
   .modal {
+    display: block;
     position: fixed; /* Fijado en la pantalla */
     width: 593px !important; /* Hace el modal más ancho (80% del ancho de la ventana) */
     max-width: 900px; /* Máximo ancho del modal */
