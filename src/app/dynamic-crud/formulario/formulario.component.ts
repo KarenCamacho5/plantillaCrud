@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChange
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-formulario',
@@ -30,7 +31,7 @@ export class FormularioComponent implements OnInit, OnChanges {
   datePickers: any[] = [];
 
 
-  constructor(private sanitizer: DomSanitizer) { }
+  constructor(private sanitizer: DomSanitizer, private datePipe: DatePipe) { }
 
   ngOnInit(): void {
     console.log("⚡ Configuración de columnas:", this.config?.columns);
@@ -263,6 +264,18 @@ export class FormularioComponent implements OnInit, OnChanges {
 
   openViewMode(item: any) {
     this.viewItem.emit(item);  // Emitimos el ítem seleccionado al padre
+  }
+  
+
+
+  formatDate(value: any): string {
+    if (!value) return 'Sin información';
+  
+    // Convertir a objeto Date si es necesario
+    const date = value instanceof Date ? value : new Date(value);
+  
+    // Formatear correctamente
+    return this.datePipe.transform(date, 'dd/MM/yyyy') || 'Sin información';
   }
   
 }

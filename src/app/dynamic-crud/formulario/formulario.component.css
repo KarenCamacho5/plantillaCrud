@@ -119,16 +119,19 @@
     font-size: 20px; /* Tamaño grande */
     font-weight: bold; /* Negrita */
   }
-  
-  /* Estilo para el botón de guardar dentro del modal */
-  .btn-guardar {
-    background: #00BCD4; /* Fondo azul */
-    margin-right: 10px; /* Espaciado a la derecha */
+
+  .btn-container{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 10px;
+    padding: 1rem;
   }
   
-  /* Estilo para el botón de cancelar dentro del modal */
-  .btn-cancelar {
-    background: #00BCD4; /* Fondo azul */
+  /* Estilo para el botón de guardar dentro del modal */
+  .botones {
+    background: #00BCD4;
+    width: 150px;
   }
 
   .readonly-field {

@@ -16,6 +16,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { DatePipe } from '@angular/common';
 
 import { HttpClientModule } from '@angular/common/http';
 
@@ -61,7 +62,7 @@ import { DynamicFormComponent } from './shared/dynamic-form/dynamic-form.compone
     HttpClientModule,
     AngularEditorModule 
   ],
-  providers: [],
+  providers: [DatePipe],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
