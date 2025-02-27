@@ -106,48 +106,6 @@
       { "icon": "edit", "color": "accent", "tooltip": "Editar", "event": "editItem" },
       { "icon": "delete", "color": "warn", "tooltip": "Eliminar", "event": "deleteItem" }
     ],
-    
-    "filters": [
-      {
-        "key": "name",
-        "label": "Campaña",
-        "type": "text"
-      },
-      {
-        "key": "date",
-        "label": "Fecha de creación",
-        "type": "date"
-      },
-      {
-        "key": "startDate",
-        "label": "Desde",
-        "type": "date"
-      },
-      {
-        "key": "endDate",
-        "label": "Hasta",
-        "type": "date"
-      },
-      {
-        "key": "status",
-        "label": "Estado",
-        "type": "select",
-        "options": [
-          {
-            "value": "",
-            "label": "Todos"
-          },
-          {
-            "value": "Activo",
-            "label": "Activo"
-          },
-          {
-            "value": "Inactivo",
-            "label": "Inactivo"
-          }
-        ]
-      }
-    ],
     "campaigns": [
       {
         "id": 1,

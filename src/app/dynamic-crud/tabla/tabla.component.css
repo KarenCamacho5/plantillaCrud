@@ -56,3 +56,12 @@
     padding: 10px; /* Espaciado interno */
     text-align: center; /* Alineación centrada */
   }
+
+  .mat-select-panel {
+    z-index: 1001 !important; /* Asegura que el menú del select esté sobre otros elementos */
+  }
+  
+  .mat-option {
+    color: black !important; /* Asegura que el texto sea visible */
+  }
+  

@@ -16,7 +16,8 @@ export class TablaComponent implements AfterViewInit, OnChanges {
   @Output() viewItem = new EventEmitter<any>(); // Emisor para visualizar un elemento
   @Output() newItem = new EventEmitter<void>(); // Emisor para agregar un nuevo elemento
 
-  filters: any = {}; // Almacena los valores de los filtros aplicados
+  @Input() filters: any = {}; // Recibe los filtros dinámicos desde el formulario
+ 
   displayedColumns: string[] = [];
   dataSource = new MatTableDataSource<any>();
 
@@ -57,41 +58,67 @@ export class TablaComponent implements AfterViewInit, OnChanges {
 
     // Actualizar la fuente de datos con los elementos actuales
     this.dataSource.data = this.items;
+
+      // Actualizar los datos con los filtros aplicados
+  this.applyFilters();
   }
 
   /**
    * @author Karen Camacho
-   * @createdate 2025/02/4
+   * @createdate 2025/02/26
    * Aplica los filtros sobre la lista de elementos y actualiza la tabla.
    */
   applyFilters() {
+    console.log("📌 Filtros aplicados:", this.filters);
+    console.log("📌 Datos en la tabla antes de filtrar:", this.items);
+  
     this.dataSource.data = this.items.filter(item => {
       return Object.keys(this.filters).every(key => {
-        if (!this.filters[key]) return true; // Si el filtro está vacío, no se aplica
-
-        if (key === 'startDate' || key === 'endDate') {
-          const itemDate = new Date(item.date);
-          const startDate = this.filters.startDate ? new Date(this.filters.startDate) : null;
-          const endDate = this.filters.endDate ? new Date(this.filters.endDate) : null;
-
-          if (startDate && itemDate < startDate) return false;
-          if (endDate && itemDate > endDate) return false;
-          return true;
+        if (!this.filters[key]) return true;
+  
+        // 🔥 Filtrar por texto
+        if (typeof this.filters[key] === 'string' && key !== 'start_date' && key !== 'end_date') {
+          return item[key]?.toLowerCase().includes(this.filters[key].toLowerCase());
         }
-
-        if (key === 'status') {
-          // Verificar si el estado seleccionado es válido
-          return item.status === this.filters.status;
+  
+        // 🔥 Filtrar por select
+        if (this.config.filters.find(f => f.key === key)?.type === 'select') {
+          return item[key] === this.filters[key];
         }
-
-        if (typeof item[key] === 'string') {
-          return item[key].toLowerCase().includes(this.filters[key].toLowerCase());
+  
+        // 🔥 Filtrar por fecha en formato dd/MM/yyyy
+        if (this.config.filters.find(f => f.key === key)?.type === 'date') {
+          const formattedItemDate = new Date(item[key]).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+          console.log(`📅 Comparando fechas - Filtro: ${this.filters[key]}, Item: ${formattedItemDate}`);
+          return formattedItemDate === this.filters[key];
         }
-
+  
         return item[key] === this.filters[key];
       });
     });
+  
+    console.log("📌 Datos después de filtrar:", this.dataSource.data);
   }
+  
+  
+  
+  
+  updateDateFilter(event: any, key: string) {
+    if (event) {
+      const formattedDate = new Date(event).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      this.filters[key] = formattedDate;
+    } else {
+      this.filters[key] = null;
+    }
+  
+    console.log("📌 Filtro de fecha actualizado:", this.filters);
+    this.applyFilters();
+  }
+  
+  
+  
+  
+  
 
   /**
    * @author Karen Camacho

@@ -4,58 +4,83 @@
   Sección de filtros y tabla para gestionar la visualización y manipulación de los datos 
 -->
 
-<!-- Sección de filtros -->
+<!-- Sección de filtros con Bootstrap -->
 <div class="filters mat-elevation-z1">
-  <div *ngFor="let filter of config?.filters" class="filter-item">
-    
-    <!-- Campo de entrada de texto o numérico -->
-    <mat-form-field appearance="outline" *ngIf="filter.type !== 'select'">
-      <mat-label>{{ filter.label }}</mat-label>
-      <input 
-        matInput 
-        [type]="filter.type"
-        [(ngModel)]="filters[filter.key]"
-        (input)="applyFilters()" 
-      />
-    </mat-form-field>
+  <div class="container">
+    <div class="row">
+      <ng-container *ngFor="let filter of config?.filters; let i = index">
+        
+        <!-- Cada filtro ocupa 1/4 del ancho en pantallas grandes, 1/2 en medianas y 100% en móviles -->
+        <div class="col-md-3 col-sm-6 col-12 mb-3">
+          
+          <!-- Campo de entrada de texto o numérico -->
+          <mat-form-field appearance="outline" *ngIf="filter.type !== 'select' && filter.type !== 'date' && filter.type !== 'checkbox'">
+            <mat-label>{{ filter.label }}</mat-label>
+            <input 
+              matInput 
+              [type]="filter.type"
+              [(ngModel)]="filters[filter.key]"
+              (input)="applyFilters()" 
+            />
+          </mat-form-field>
 
-    <!-- Campo de selección desplegable -->
-    <mat-form-field appearance="outline" *ngIf="filter.type === 'select'">
-      <mat-label>{{ filter.label }}</mat-label>
-      <mat-select [(ngModel)]="filters[filter.key]" (selectionChange)="applyFilters()">
-        <mat-option *ngFor="let option of filter.options" [value]="option.value">
-          {{ option.label }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
+          <!-- Campo de selección desplegable -->
+          <mat-form-field appearance="outline" *ngIf="filter.type === 'select'">
+            <mat-label>{{ filter.label }}</mat-label>
+            <mat-select [(ngModel)]="filters[filter.key]" (selectionChange)="applyFilters()">
+              <mat-option *ngFor="let option of filter.options" [value]="option.value">
+                {{ option.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          
 
-    <!-- Campo de rango de fechas -->
-    <div *ngIf="filter.type === 'dateRange'" class="date-range">
-      <mat-form-field appearance="outline">
-        <mat-label>Desde</mat-label>
-        <input matInput [matDatepicker]="startPicker" [(ngModel)]="filters.startDate" (dateChange)="applyFilters()">
-        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-        <mat-datepicker #startPicker></mat-datepicker>
-      </mat-form-field>
-    
-      <mat-form-field appearance="outline">
-        <mat-label>Hasta</mat-label>
-        <input matInput [matDatepicker]="endPicker" [(ngModel)]="filters.endDate" (dateChange)="applyFilters()">
-        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
-        <mat-datepicker #endPicker></mat-datepicker>
-      </mat-form-field>
+          <!-- Campo de selección de fecha -->
+          <mat-form-field appearance="outline" *ngIf="filter.type === 'date'">
+            <mat-label>{{ filter.label }}</mat-label>
+            <input 
+              matInput 
+              [matDatepicker]="picker" 
+              [value]="filters[filter.key]" 
+              (dateChange)="updateDateFilter($event.value, filter.key)">
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+
+
+
+
+
+          <!-- Checkbox -->
+          <div *ngIf="filter.type === 'checkbox'" class="checkbox-container">
+            <mat-checkbox [(ngModel)]="filters[filter.key]" (change)="applyFilters()">
+              {{ filter.label }}
+            </mat-checkbox>
+          </div>
+
+        </div>
+
+        <!-- Cierre de fila después de cada 4 columnas (opcional, por si es necesario ajustar) -->
+        <ng-container *ngIf="(i + 1) % 4 === 0"></ng-container>
+
+      </ng-container>
     </div>
-
   </div>
-  
-  <!-- Botón para reiniciar los filtros -->
-  <button mat-icon-button (click)="resetFilters()">
-    <mat-icon>refresh</mat-icon>
-  </button>
 
-  <!-- Botón para crear una nueva campaña -->
-  <button mat-raised-button color="primary" (click)="newItem.emit()">Crear {{ config?.itemName }}</button>
+  <!-- Botones de acción -->
+  <div class="d-flex justify-content-end mt-3">
+    <!-- Botón para reiniciar los filtros -->
+    <button mat-icon-button (click)="resetFilters()">
+      <mat-icon>refresh</mat-icon>
+    </button>
+
+    <!-- Botón para crear un nuevo ítem -->
+    <button mat-raised-button color="primary" (click)="newItem.emit()">Crear {{ config?.itemName }}</button>
+  </div>
 </div>
+
+
+
 
 <!-- Sección de tabla -->
 <div class="table-container mat-elevation-z2">

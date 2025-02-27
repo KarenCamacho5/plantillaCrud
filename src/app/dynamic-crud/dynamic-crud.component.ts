@@ -37,6 +37,16 @@ export class DynamicCrudComponent implements OnInit {
         this.config = data.crudConfig;
         this.items = this.config.campaigns || [];
         this.filteredItems = [...this.items];
+
+        // Generar dinámicamente los filtros a partir de las columnas del formulario
+        this.config.filters = this.config.columns
+        .filter((column: any) => column.key !== 'id') // ❌ Elimina el "ID"
+        .map((column: any) => ({
+          key: column.key,
+          label: column.label,
+          type: column.typeInput || 'text',
+          options: column.options ? column.options : [],
+        }));
       },
       (error) => console.error('Error al cargar configuración:', error)
     );
@@ -114,6 +124,12 @@ export class DynamicCrudComponent implements OnInit {
 
     this.applyFilters(); // Actualizar la tabla con los nuevos datos
   }
+
+  handleFiltersChanged(filters: any) {
+    console.log("📌 Filtros actualizados desde el formulario:", filters);
+    this.filters = filters; // Guarda los filtros y los pasa a la tabla
+  }
+  
 
   /**
    * @author Karen Camacho

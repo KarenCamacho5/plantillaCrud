@@ -146,6 +146,15 @@
 
             </div>
 
+            <div *ngIf="column.typeInput === 'rich-text'" class="rich-text-container">
+              <label>{{ column.label }}</label>
+              <angular-editor
+                [formControlName]="column.key"
+                [config]="column.editorConfig">
+              </angular-editor>
+            </div>
+            
+
           </div>
         </ng-container>
       </ng-container>

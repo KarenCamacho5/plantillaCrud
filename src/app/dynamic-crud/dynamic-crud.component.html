@@ -16,6 +16,7 @@
   <app-tabla 
     [config]="config"
     [items]="filteredItems"
+    [filters]="filters"
     (editItem)="openModal($event)" 
     (deleteItem)="deleteItem($event)"
     (viewItem)="openModal($event, true)" 
@@ -29,7 +30,9 @@
     [selectedItem]="selectedItem"
     [isViewMode]="isViewMode"
     (close)="closeModal()"
-    (save)="handleSave($event)"> <!-- Guarda el nuevo ítem o edita uno existente -->
+    (save)="handleSave($event)" 
+    (filtersChanged)="handleFiltersChanged($event)"> <!-- 🔥 Conectar filtros dinámicos -->
+
   </app-formulario>
 
 </div>

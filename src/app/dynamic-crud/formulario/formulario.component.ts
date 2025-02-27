@@ -25,6 +25,8 @@ export class FormularioComponent implements OnInit, OnChanges {
   @Output() sendIndexField: EventEmitter<number> = new EventEmitter<number>();
   @Output() onClickButtonCancel: EventEmitter<void> = new EventEmitter<void>();
   @Output() onClickButtonDeleteFormArray: EventEmitter<FormGroup> = new EventEmitter<FormGroup>();
+  @Output() filtersChanged = new EventEmitter<any>(); // Nuevo evento para filtros
+
 
   formSurvey: FormGroup;
   pickerRefs: { picker: any }[] = [];
@@ -43,6 +45,10 @@ export class FormularioComponent implements OnInit, OnChanges {
     }
     // Inicializa correctamente los DatePickers con referencias vacías
     this.datePickers = this.config.columns.map(() => ({ picker: null }));
+
+    this.formSurvey.valueChanges.subscribe(values => {
+      this.emitFilters(values);
+    });
   
     this.initializeForm();
   }
@@ -71,26 +77,28 @@ export class FormularioComponent implements OnInit, OnChanges {
     this.config?.columns.forEach((item: any) => {
       if (item.typeInput === 'date') {
         objectForm[item.key] = new FormControl(
-          this.parseDate(this.selectedItem?.[item.key]), // 🔹 Convierte string a Date
+          this.parseDate(this.selectedItem?.[item.key]), 
           this.generateValidators(item.rules)
         );
       } 
-      if (item.typeInput === 'date-range' && item.range?.length === 2) {
+      
+      else if (item.typeInput === 'date-range' && item.range?.length === 2) {
         const startDateKey = item.range[0].key;
         const endDateKey = item.range[1].key;
-      
+  
         objectForm[item.key] = new FormGroup({
           [startDateKey]: new FormControl(
-            this.parseDate(this.selectedItem?.[startDateKey]) ?? '', 
+            this.parseDate(this.selectedItem?.[startDateKey]), 
             this.generateValidators(item.rules?.[startDateKey] || { required: true })
           ),
           [endDateKey]: new FormControl(
-            this.parseDate(this.selectedItem?.[endDateKey] )?? '', 
+            this.parseDate(this.selectedItem?.[endDateKey]), 
             this.generateValidators(item.rules?.[endDateKey] || { required: true })
           )
         });
-
-        console.log(`📅 Rango de fechas inicializado: ${startDateKey} y ${endDateKey}`);}
+  
+        console.log(`📅 Rango de fechas inicializado: ${startDateKey} y ${endDateKey}`);
+      } 
       
       
       else if (item.typeInput === 'array') {
@@ -102,7 +110,14 @@ export class FormularioComponent implements OnInit, OnChanges {
             })
           )
         );
-      } 
+      }else if (item.typeInput === 'rich-text') {
+        objectForm[item.key] = new FormControl(
+          this.selectedItem?.[item.key] || '',
+          this.generateValidators(item.rules)
+        );
+      }
+      
+      
       else {
         // ✅ Solo asignamos un FormControl si no es un FormArray o DateRange
         objectForm[item.key] = new FormControl(
@@ -287,22 +302,28 @@ export class FormularioComponent implements OnInit, OnChanges {
   }
 
 
-  parseDate(value: any): Date | null {
-    if (!value) return null;
+  parseDate(dateString: any): Date | null {
+    if (!dateString) return null; 
   
-    // 📌 Detecta si ya es un objeto Date
-    if (value instanceof Date) return value;
+    if (dateString instanceof Date) return dateString; // Si ya es Date, retornar
   
-    // 📌 Convertir formato dd/MM/yyyy a Date
-    const parts = value.split('/');
+    const parts = dateString.split('/');
     if (parts.length === 3) {
-      const day = parseInt(parts[0], 10);
-      const month = parseInt(parts[1], 10) - 1; // Meses en JS van de 0 a 11
-      const year = parseInt(parts[2], 10);
-      return new Date(year, month, day);
+      const [day, month, year] = parts.map(Number);
+      return new Date(year, month - 1, day); // Mes en JavaScript comienza en 0
     }
   
-    return new Date(value); // Intentar convertirlo directamente
+    return null; // En caso de error, devolver null
+  }
+
+  emitFilters(values: any) {
+    const filters = Object.keys(values).reduce((acc, key) => {
+      acc[key] = values[key] || '';
+      return acc;
+    }, {});
+  
+    console.log("📌 Emitiendo filtros desde el formulario:", filters);
+    this.filtersChanged.emit(filters);
   }
   
   
