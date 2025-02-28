@@ -2,6 +2,8 @@ import { Component, Input, Output, EventEmitter, ViewChild, AfterViewInit, OnCha
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { DatePipe } from '@angular/common';
+import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+
 
 @Component({
   selector: 'app-tabla',
@@ -74,11 +76,19 @@ export class TablaComponent implements AfterViewInit, OnChanges {
   
     this.dataSource.data = this.items.filter(item => {
       return Object.keys(this.filters).every(key => {
-        if (!this.filters[key]) return true;
+        if (this.filters[key] === null || this.filters[key] === undefined) return true; // Si el filtro está vacío, no aplicar filtro
   
-        // 🔥 Filtrar por texto
-        if (typeof this.filters[key] === 'string' && key !== 'start_date' && key !== 'end_date') {
+        console.log(`🔍 Filtrando clave: ${key}, Valor filtro: ${this.filters[key]}, Valor item:`, item[key]);
+  
+        // 🔥 Filtrar por texto en valores simples
+        if (typeof this.filters[key] === 'string' && key !== 'start_date' && key !== 'end_date' && key !== 'questions' && key !== 'file_attachment' && key !== 'terms') {
           return item[key]?.toLowerCase().includes(this.filters[key].toLowerCase());
+        }
+  
+        // 🔥 Filtrar por nombre del archivo
+        if (key === 'file_attachment' && item[key]) {
+          const fileName = item[key]?.name || ''; // Asegurar que existe `name`
+          return fileName.toLowerCase().includes(this.filters[key].toLowerCase());
         }
   
         // 🔥 Filtrar por select
@@ -88,9 +98,24 @@ export class TablaComponent implements AfterViewInit, OnChanges {
   
         // 🔥 Filtrar por fecha en formato dd/MM/yyyy
         if (this.config.filters.find(f => f.key === key)?.type === 'date') {
-          const formattedItemDate = new Date(item[key]).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-          console.log(`📅 Comparando fechas - Filtro: ${this.filters[key]}, Item: ${formattedItemDate}`);
-          return formattedItemDate === this.filters[key];
+          const itemDate = this.parseDate(item[key]); // Convierte la fecha antes de compararla
+          const filterDate = this.filters[key];
+  
+          console.log(`📅 Comparando fechas - Filtro: ${filterDate}, Item: ${itemDate}`);
+  
+          return itemDate.getTime() === filterDate.getTime();
+        }
+  
+        // 🔥 Filtrar por preguntas (array de objetos con clave 'text')
+        if (key === 'questions' && Array.isArray(item[key])) {
+          return item[key].some((q: any) => 
+            typeof q.text === 'string' && q.text.toLowerCase().includes(this.filters[key].toLowerCase())
+          );
+        }
+  
+        // 🔥 Filtrar por checkbox (términos y condiciones)
+        if (key === 'terms') {
+          return item[key] === this.filters[key]; // Comparación exacta de booleanos
         }
   
         return item[key] === this.filters[key];
@@ -103,17 +128,47 @@ export class TablaComponent implements AfterViewInit, OnChanges {
   
   
   
+  
+  
+  
+  
+  
+  
+  parseDate(dateStr: string): Date {
+    const parts = dateStr.split('/'); // Divide "15/04/2020" en ["15", "04", "2020"]
+    return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0])); // Año, Mes - 1, Día
+  }
+  
+  
+  
+  
+  
+  
+  
+  
   updateDateFilter(event: any, key: string) {
     if (event) {
-      const formattedDate = new Date(event).toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-      this.filters[key] = formattedDate;
+      this.filters[key] = new Date(event); // Guarda el filtro como objeto Date
     } else {
-      this.filters[key] = null;
+      delete this.filters[key]; // Elimina el filtro si no hay fecha seleccionada
     }
   
-    console.log("📌 Filtro de fecha actualizado:", this.filters);
+    console.log(`📌 Filtro de fecha actualizado: ${key} = ${this.filters[key]}`);
     this.applyFilters();
   }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
   
   
   

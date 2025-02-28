@@ -14,18 +14,19 @@
         <div class="col-md-3 col-sm-6 col-12 mb-3">
           
           <!-- Campo de entrada de texto o numérico -->
-          <mat-form-field appearance="outline" *ngIf="filter.type !== 'select' && filter.type !== 'date' && filter.type !== 'checkbox'">
+          <mat-form-field appearance="fill" *ngIf="filter.type !== 'select' && filter.type !== 'date' && filter.type !== 'checkbox'">
             <mat-label>{{ filter.label }}</mat-label>
             <input 
-              matInput 
-              [type]="filter.type"
-              [(ngModel)]="filters[filter.key]"
-              (input)="applyFilters()" 
-            />
+            matInput 
+            [type]="filter.type"
+            [(ngModel)]="filters[filter.key]"
+            (input)="applyFilters()" 
+          />
+          
           </mat-form-field>
 
           <!-- Campo de selección desplegable -->
-          <mat-form-field appearance="outline" *ngIf="filter.type === 'select'">
+          <mat-form-field appearance="fill" *ngIf="filter.type === 'select'">
             <mat-label>{{ filter.label }}</mat-label>
             <mat-select [(ngModel)]="filters[filter.key]" (selectionChange)="applyFilters()">
               <mat-option *ngFor="let option of filter.options" [value]="option.value">
@@ -34,30 +35,17 @@
             </mat-select>
           </mat-form-field>
           
-
-          <!-- Campo de selección de fecha -->
-          <mat-form-field appearance="outline" *ngIf="filter.type === 'date'">
+          <mat-form-field appearance="fill" *ngIf="filter.type === 'date'">
             <mat-label>{{ filter.label }}</mat-label>
             <input 
               matInput 
               [matDatepicker]="picker" 
-              [value]="filters[filter.key]" 
+              [(ngModel)]="filters[filter.key]" 
               (dateChange)="updateDateFilter($event.value, filter.key)">
             <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
           </mat-form-field>
-
-
-
-
-
-          <!-- Checkbox -->
-          <div *ngIf="filter.type === 'checkbox'" class="checkbox-container">
-            <mat-checkbox [(ngModel)]="filters[filter.key]" (change)="applyFilters()">
-              {{ filter.label }}
-            </mat-checkbox>
-          </div>
-
+          
         </div>
 
         <!-- Cierre de fila después de cada 4 columnas (opcional, por si es necesario ajustar) -->

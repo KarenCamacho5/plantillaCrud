@@ -28,7 +28,7 @@ export class DynamicCrudComponent implements OnInit {
 
   /**
    * @author Karen Camacho
-   * @createdate 2025/02/4
+   * @createdate 2025/02/27
    * Obtiene la configuración del CRUD desde un archivo JSON y carga los datos iniciales.
    */
   loadConfig() {
@@ -40,7 +40,7 @@ export class DynamicCrudComponent implements OnInit {
 
         // Generar dinámicamente los filtros a partir de las columnas del formulario
         this.config.filters = this.config.columns
-        .filter((column: any) => column.key !== 'id') // ❌ Elimina el "ID"
+        .filter((column: any) => column.key !== 'id'  && column.key !== 'date_range'  && column.key !== 'checkbox') // ❌ Elimina el "ID"
         .map((column: any) => ({
           key: column.key,
           label: column.label,
